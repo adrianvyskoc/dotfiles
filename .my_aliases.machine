@@ -1,8 +1,8 @@
 # Machine-specific aliases and functions.
 # Tracked in git, but kept separate from .my_aliases so universal aliases stay clean.
 
-# Jump to a project under ~/Documents/development. Usage: goto <project>
-goto() {
+# ---- Machine ----
+goto() {  ## jump to a project under ~/Documents/development (goto <project>)
   local dev="$HOME/Documents/development"
   if [ -z "$1" ]; then
     echo "Usage: goto <project>" >&2
