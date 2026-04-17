@@ -16,6 +16,7 @@ link_file() {
 
 link_file "$DOTFILES_DIR/.my_aliases"         "$HOME/.my_aliases"
 link_file "$DOTFILES_DIR/.my_aliases.machine" "$HOME/.my_aliases.machine"
+link_file "$DOTFILES_DIR/ai"                   "$HOME/.ai"
 
 if ! grep -Fq "$SOURCE_LINE" "$HOME/.zshrc" 2>/dev/null; then
   {

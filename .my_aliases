@@ -73,7 +73,7 @@ hlp() {  ## show descriptions for aliases/functions (hlp [--section|<name>])
     esac
   fi
 
-  local files=("$HOME/.my_aliases" "$HOME/.my_aliases.machine") existing=()
+  local files=("$HOME/.my_aliases" "$HOME/.my_aliases.machine" "$HOME/.ai/aic.sh") existing=()
   local f
   for f in "${files[@]}"; do [ -f "$f" ] && existing+=("$f"); done
 
@@ -116,6 +116,10 @@ hlp() {  ## show descriptions for aliases/functions (hlp [--section|<name>])
     }
   ' "${existing[@]}" | column -t -s $'\t'
 }
+
+# AI library (aic command) — definition lives in ~/.ai/aic.sh, which also
+# owns its own `# ---- AI library ----` section so hlp picks it up.
+[ -f "$HOME/.ai/aic.sh" ] && source "$HOME/.ai/aic.sh"
 
 # ---- Machine-specific aliases ----
 # Aliases tied to this machine's layout live in .my_aliases.machine (tracked, sourced here).
