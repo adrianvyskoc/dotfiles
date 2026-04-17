@@ -1,0 +1,51 @@
+# ---- Git workflow ----
+alias gs='git status -sb'
+alias gca='git commit --amend --no-edit'
+alias gcm='git commit -m'
+alias gcb='git checkout -b'
+alias gco='git checkout'
+alias gpl='git pull --rebase'
+alias gps='git push'
+alias gpsf='git push --force-with-lease'
+alias gst='git stash'
+alias gstp='git stash pop'
+alias glg='git log --oneline --graph --decorate -20'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gbr='git branch'
+
+# Recent branches, most-recent first. Usage: gbl [count] (default 20)
+gbl() {
+  {
+    printf 'BRANCH\tLAST COMMIT\tAUTHOR\n'
+    git for-each-ref --count="${1:-20}" --sort=-committerdate refs/heads/ \
+      --format='%(refname:short)%09%(committerdate:relative)%09%(authorname)'
+  } | column -t -s $'\t'
+}
+
+# ---- npm / node / package managers ----
+alias ni='npm install'
+alias nid='npm install --save-dev'
+alias nr='npm run'
+alias nrd='npm run dev'
+alias nrb='npm run build'
+alias nrt='npm run test'
+alias pni='pnpm install'
+alias pnd='pnpm dev'
+alias pnb='pnpm build'
+alias bi='bun install'
+alias bd='bun dev'
+alias bb='bun run build'
+
+# ---- Directory navigation ----
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ll='ls -lah'
+alias la='ls -A'
+alias l='ls -CF'
+
+# ---- Misc ----
+alias reload='source ~/.zshrc'
+alias path='echo -e ${PATH//:/\\n}'
