@@ -2,15 +2,20 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="$HOME/.my_aliases"
 SOURCE_LINE='[ -f "$HOME/.my_aliases" ] && source "$HOME/.my_aliases"'
 
-if [ -L "$TARGET" ] && [ "$(readlink "$TARGET")" = "$DOTFILES_DIR/.my_aliases" ]; then
-  echo "Symlink already in place: $TARGET"
-else
-  ln -sfn "$DOTFILES_DIR/.my_aliases" "$TARGET"
-  echo "Linked $TARGET -> $DOTFILES_DIR/.my_aliases"
-fi
+link_file() {
+  local src="$1" dest="$2"
+  if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+    echo "Symlink already in place: $dest"
+  else
+    ln -sfn "$src" "$dest"
+    echo "Linked $dest -> $src"
+  fi
+}
+
+link_file "$DOTFILES_DIR/.my_aliases"         "$HOME/.my_aliases"
+link_file "$DOTFILES_DIR/.my_aliases.machine" "$HOME/.my_aliases.machine"
 
 if ! grep -Fq "$SOURCE_LINE" "$HOME/.zshrc" 2>/dev/null; then
   {

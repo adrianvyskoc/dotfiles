@@ -1,0 +1,24 @@
+# Machine-specific aliases and functions.
+# Tracked in git, but kept separate from .my_aliases so universal aliases stay clean.
+
+# Jump to a project under ~/Documents/development. Usage: goto <project>
+goto() {
+  local dev="$HOME/Documents/development"
+  if [ -z "$1" ]; then
+    echo "Usage: goto <project>" >&2
+    echo "Available:" >&2
+    ls -1 "$dev" >&2
+    return 1
+  fi
+  if [ ! -d "$dev/$1" ]; then
+    echo "No such project: $1" >&2
+    return 1
+  fi
+  cd "$dev/$1"
+}
+
+# Tab completion for goto (zsh only).
+if [ -n "$ZSH_VERSION" ]; then
+  _goto() { _path_files -W "$HOME/Documents/development" -/ }
+  compdef _goto goto 2>/dev/null
+fi

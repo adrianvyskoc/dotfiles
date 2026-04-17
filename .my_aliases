@@ -65,3 +65,7 @@ fckoff() {
   echo "Killing PID(s) on port $1: $pids"
   echo "$pids" | xargs kill -9
 }
+
+# ---- Machine-specific aliases ----
+# Aliases tied to this machine's layout live in .my_aliases.machine (tracked, sourced here).
+[ -f "$HOME/.my_aliases.machine" ] && source "$HOME/.my_aliases.machine"
