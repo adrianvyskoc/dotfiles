@@ -24,16 +24,19 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 
 - **alpine-js** — idiomatic Alpine.js for CDN-loaded, server-rendered HTML/JSX (no build step)
 - **typescript-types** — decision framework for shared vs local types, organization by domain
+- **api-error-handling** — consistent error shape, OpenAPI-documented, specific status codes, disciplined `try/catch`, typed error classes
 
 ### rules
 
 - **code-hygiene** — explain before implement, prefer explicit, ask when unclear, no TODOs without context
 - **pre-pr-checklist** — the `typecheck → lint → format → build` gate
 - **api-layer-discipline** — thin routes, services own data access + business logic, factory DI, explicit types at boundaries
+- **testing-discipline** — don't write tests unprompted; propose coverage gaps but ask before implementing
 
 ### agents
 
-_(none yet — reserved for future extractions)_
+- **code-reviewer** — reviews a diff/PR against project rules, returns a structured punch-list (read-only)
+- **type-consolidator** — finds duplicate type definitions and proposes a consolidation plan (propose-first)
 
 ## Using `aic`
 
