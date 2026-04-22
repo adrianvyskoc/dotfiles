@@ -32,6 +32,7 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 - **pre-pr-checklist** — the `typecheck → lint → format → build` gate
 - **api-layer-discipline** — thin routes, services own data access + business logic, factory DI, explicit types at boundaries
 - **testing-discipline** — don't write tests unprompted; propose coverage gaps but ask before implementing
+- **commit-discipline** — never commit or push without explicit approval; use Conventional Commits format
 
 ### agents
 
