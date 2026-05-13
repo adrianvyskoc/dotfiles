@@ -34,6 +34,7 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 - **testing-discipline** — don't write tests unprompted; propose coverage gaps but ask before implementing
 - **commit-discipline** — never commit or push without explicit approval; use Conventional Commits format
 - **branch-discipline** — at the start of new work, confirm the current branch matches the task and surface uncommitted changes
+- **planning-discipline** — every feature plan leads with the goal, shows a file tree with line deltas, calls out type/scope changes, lists risks and follow-ups, and surfaces open questions before execution
 
 ### agents
 
