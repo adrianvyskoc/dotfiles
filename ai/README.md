@@ -19,6 +19,7 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 
 - **add-task** — creates `tasks/<slug>.md` with a standard planning template
 - **todos** — lists all files in `tasks/` with status + one-line goal
+- **git-state** — audits every repo (siblings + submodules) under a path for branch/dirtiness/open PRs; with `--reset`, stashes + returns each to its default branch
 
 ### skills
 
