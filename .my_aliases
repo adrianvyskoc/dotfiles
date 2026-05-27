@@ -56,6 +56,7 @@ alias l='ls -CF'           ## compact listing
 # ---- Misc ----
 alias reload='source ~/.zshrc'         ## re-source ~/.zshrc
 alias path='echo -e ${PATH//:/\\n}'    ## print PATH one entry per line
+alias cdsp='claude --dangerously-skip-permissions'  ## launch Claude Code skipping permission prompts
 
 fckoff() {  ## kill whatever is listening on <port> (fckoff <port>)
   if [ -z "$1" ]; then
