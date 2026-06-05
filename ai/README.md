@@ -26,6 +26,7 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 - **alpine-js** — idiomatic Alpine.js for CDN-loaded, server-rendered HTML/JSX (no build step)
 - **typescript-types** — decision framework for shared vs local types, organization by domain
 - **api-error-handling** — consistent error shape, OpenAPI-documented, specific status codes, disciplined `try/catch`, typed error classes
+- **obsidian-daily-notes** — summarizes conversations, decisions, tasks and ideas into Obsidian daily notes on disk; previews before writing and proactively offers a write at the end of meaningful conversations
 
 ### rules
 
