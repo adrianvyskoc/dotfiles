@@ -1,6 +1,6 @@
 ---
 name: obsidian-knowledge-base
-description: Ukladá a manažuje kurátorovaný Knowledge Base v Ado-vom Obsidian vaulte — trvalé, tematické (evergreen) poznámky, oddelené od Daily Notes. Použi keď používateľ povie "ulož do knowledge base", "zapíš to do KB", "pridaj do knowledge base", alebo na konci zmysluplnej konverzácie proaktívne navrhni KB záznam ak vznikol znovupoužiteľný poznatok (technické riešenie, rozhodnutie, koncept, postup, prehľad). Skill sám vyberie kategóriu, vytvorí novú ak treba, a jednu tému zapíše do jedného .md súboru. Knowledge Base sa píše po anglicky (default).
+description: Saves and manages a curated Knowledge Base in Ado's Obsidian vault — durable, evergreen, topic-centric notes, kept separate from Daily Notes. Use when the user says "save to knowledge base", "add to KB", "write this to the knowledge base" (or the Slovak equivalents "ulož do knowledge base", "zapíš to do KB", "pridaj do knowledge base"), or at the end of a meaningful conversation proactively offer a KB entry when a reusable insight emerged (technical solution, decision, concept, how-to, overview). The skill picks the category itself, creates a new one when needed, and writes one topic to one .md file. Knowledge Base notes are written in English by default.
 ---
 
 # Obsidian Knowledge Base Skill
@@ -10,7 +10,7 @@ Maintains a curated, topic-centric Knowledge Base in Ado's Obsidian vault. Disti
 ## Configuration
 
 ```
-VAULT_PATH:   /Users/adrianvyskoc/Library/Mobile Documents/iCloud~md~obsidian/Documents/Second brain
+VAULT_PATH:   /Users/adrianvyskoc/Library/Mobile Documents/iCloud~md~obsidian/Documents
 KB_ROOT:      <VAULT_PATH>/Knowledge Base
 INDEX:        <KB_ROOT>/_index.md       # Map of Content
 TAXONOMY:     <KB_ROOT>/_taxonomy.md    # canonical structure + category registry

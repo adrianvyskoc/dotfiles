@@ -1,131 +1,145 @@
 ---
 name: obsidian-daily-notes
-description: Zapisuje poznámky, sumarizácie konverzácií, tasky a nápady do Obsidian daily notes priamo na disku. Použi tento skill vždy keď používateľ povie "zapiš do Obsidianu", "daily note", "ulož si to", "zapamätaj si", alebo na konci každej konverzácie proaktívne navrhni zápis ak prebehla zmysluplná diskusia. Skill formátuje a sumarizuje obsah sám — používateľ nemusí nič špeciálne formulovať.
+description: Saves notes, conversation summaries, tasks, and ideas to Obsidian daily notes directly on disk. Use this skill whenever the user says "write to Obsidian", "daily note", "save this", "remember this", or at the end of any meaningful conversation proactively suggest saving if something worth keeping was discussed. The skill formats and summarizes content itself — the user doesn't need to phrase anything specially.
 ---
 
 # Obsidian Daily Notes Skill
 
-## Konfigurácia
+## Configuration
 
 ```
-VAULT_PATH: /Users/adrianvyskoc/Documents/Second brain
+VAULT_PATH:   /Users/adrianvyskoc/Library/Mobile Documents/iCloud~md~obsidian/Documents
 DAILY_FOLDER: Daily
-DATE_FORMAT: YYYY-MM-DD (napr. 2026-06-04.md)
-FULL_PATH: /Users/adrianvyskoc/Documents/Second brain/Daily/YYYY-MM-DD.md
+DATE_FORMAT:  YYYY-MM-DD (e.g. 2026-06-04.md)
+FULL_PATH:    <VAULT_PATH>/Daily/YYYY-MM-DD.md
 ```
 
-## Kedy použiť
+## When to use
 
-- Používateľ explicitne povie "zapiš do Obsidianu", "daily note", "ulož si to", "zapamätaj si to"
-- **Na konci každej zmysluplnej konverzácie** — proaktívne navrhni zápis s preview obsahu
-- Po dokončení technického riešenia, debaty, alebo brainstormingu
+- User explicitly says "write to Obsidian", "daily note", "save this", "remember this"
+- **At the end of any meaningful conversation** — proactively suggest saving with a content preview
+- After completing a technical solution, debate, or brainstorming session
 
 ---
 
 ## Workflow
 
-### 1. Analyzuj konverzáciu
+### 1. Analyse the conversation
 
-Pred zápisom identifikuj čo stojí za zachovaním:
-- Rozhodnutia ktoré padli
-- Technické riešenia / kód / architektúra
-- Tasky ktoré vyplynuli
-- Zaujímavé myšlienky / nápady
-- Zdroje / odkazy
+Before writing, identify what's worth preserving:
+- Decisions that were made
+- Technical solutions / code / architecture
+- Tasks that came out of the discussion
+- Interesting thoughts / ideas
+- Sources / links
 
-Nezapisuj triviálne small talk ani veci bez hodnoty.
+Don't save trivial small talk or things without value.
 
-### 2. Navrhni obsah (preview)
+### 2. Propose the content (preview)
 
-Vždy najprv **ukáž používateľovi čo chystáš zapísať** a opýtaj sa či súhlasí, chce niečo pridať/odobrať, alebo upraviť. Formátuj ako finálny markdown aby videl presne čo pôjde do súboru.
+Always **show the user what you're about to write first** and ask whether they approve, want to add/remove something, or adjust anything. Format it as final markdown so they see exactly what will go into the file.
 
-### 3. Po schválení — zapis do súboru
+### 3. After approval — write to file
 
 ```javascript
-// Pseudokód logiky
+// Logic pseudocode
 const today = new Date().toISOString().split('T')[0] // "2026-06-04"
-const filePath = `/Users/adrianvyskoc/Documents/Second brain/Daily/${today}.md`
+const filePath = `<VAULT_PATH>/Daily/${today}.md`
 
-// Ak súbor existuje → append
-// Ak neexistuje → vytvor s hlavičkou
+// If file exists → append
+// If file doesn't exist → create with header
 ```
 
-**V Claude Code / Cowork** — použi `bash_tool` alebo `create_file` / `str_replace`:
+**In Claude Code / Cowork** — use `bash_tool` or `create_file` / `str_replace`:
 
 ```bash
-# Skontroluj či súbor existuje
-FILE="/Users/adrianvyskoc/Documents/Second brain/Daily/$(date +%Y-%m-%d).md"
+FILE="<VAULT_PATH>/Daily/$(date +%Y-%m-%d).md"
 
 if [ -f "$FILE" ]; then
-  # Append s oddeľovačom
+  # Append with separator
   echo "" >> "$FILE"
   echo "---" >> "$FILE"
   cat << 'EOF' >> "$FILE"
-[NOVÝ OBSAH TU]
+[NEW CONTENT HERE]
 EOF
 else
-  # Vytvor nový súbor
+  # Create new file
   cat << 'EOF' > "$FILE"
-[NOVÝ OBSAH TU]
+[NEW CONTENT HERE]
 EOF
 fi
 ```
 
-**V Claude.ai** (bez prístupu k filesystému) — vygeneruj markdown blok ktorý používateľ skopíruje, a ponúkni `.md` file na stiahnutie.
+**In Claude.ai** (no filesystem access) — generate a markdown block the user can copy, and offer a `.md` file for download.
 
 ---
 
-## Formát záznamu
+## Entry format
 
-Každý zápis má túto štruktúru (sekcie vynechaj ak sú prázdne):
+Each entry follows this structure (skip empty sections):
 
 ```markdown
-## HH:MM — [Krátky názov témy]
+## HH:MM — [Short topic title]
 
-### 💬 O čom sme hovorili
-Stručná sumarizácia (2-5 viet). Čo bol kontext, čo sa riešilo.
+### 💬 What we discussed
+Brief summary (2–5 sentences). What the context was, what was being solved.
 
-### 💡 Kľúčové poznatky / Rozhodnutia
-- Bod 1
-- Bod 2
+### 💡 Key insights / Decisions
+- Point 1
+- Point 2
 
-### ✅ Tasky
+### ✅ Tasks
 - [ ] Task 1
 - [ ] Task 2
 
-### 🔧 Technické detaily
-Kód, architektúra, príkazy — ak relevantné. Použi code bloky.
+### 🔧 Technical details
+Code, architecture, commands — if relevant. Use code blocks.
 
-### 🔗 Zdroje & Odkazy
-- [Názov](url)
+### 🔗 Sources & Links
+- [Name](url)
+
+### 📚 Knowledge Base
+- [[KB Note Title]] — one-liner on why it's related
 ```
 
-**Pravidlá formátovania:**
-- Timestamp = čas záznamu (nie celý deň)
-- Jazyk = podľa jazyka konverzácie (SK/EN)
-- Buď konkrétny, nie vágny — "rozhodli sme sa použiť Drizzle namiesto Prisma kvôli X" nie "riešili sme DB"
-- Code snippety zachovaj ak boli dôležité
+**Formatting rules:**
+- Timestamp = time of the entry (not the whole day)
+- Language = match the conversation language (SK/EN)
+- Be specific, not vague — "decided to use Drizzle instead of Prisma because of X" not "discussed DB"
+- Preserve code snippets if they were important
+- **Knowledge Base links:** if a KB note was created or already exists that covers a topic from this conversation, add a `### 📚 Knowledge Base` section at the end and link it with `[[wikilink]]`. Don't repeat the KB content — just point to it. E.g.: `[[Drizzle Migrations]] — migration workflow we settled on today`
 
 ---
 
-## Hlavička nového súboru
+## New file header
 
-Ak daily note ešte neexistuje, vytvor ju s touto hlavičkou:
+If the daily note doesn't exist yet, create it with this header:
 
 ```markdown
 # Daily Note — 2026-06-04
 
-> *"..."* <!-- voliteľný quote, môžeš vynechať -->
+> *"..."* <!-- optional quote, can be omitted -->
 
 ---
 ```
 
 ---
 
-## Proaktívny návrh na konci konverzácie
+## Relationship to the Knowledge Base
 
-Ak konverzácia mala zmysluplný obsah a používateľ sám nenavrhol zápis, na konci povedz:
+Daily Notes = chronological per-day log (usually in SK). The Knowledge Base = evergreen English reference. They run in parallel and complement each other:
 
-> 📓 **Zapísať do Obsidianu?** Mám z tejto konverzácie [X bodov / rozhodnutie o Y / task Z]. Ukážem ti preview?
+- Time-bound events, decisions, tasks → Daily Notes
+- Durable, reusable knowledge → Knowledge Base
+- **When both are relevant:** write the durable substance to KB, keep only a short pointer in the daily entry — e.g. "today we decided X → see [[Topic Title]]"
+- Linking is one-directional: Daily Notes → KB (via `[[wikilinks]]`), not the other way round
 
-Nebuď otravný — navrhni raz, ak odmietne, nerieš.
+---
+
+## Proactive suggestion at end of conversation
+
+If the conversation had meaningful content and the user didn't propose saving it, say at the end:
+
+> 📓 **Save to Obsidian?** I have [X points / decision about Y / task Z] from this conversation. Want a preview?
+
+Don't be pushy — offer once, if declined, drop it.
