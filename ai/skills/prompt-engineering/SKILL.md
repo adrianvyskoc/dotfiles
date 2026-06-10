@@ -1,23 +1,23 @@
 ---
 name: prompt-engineering
-description: Write or revise a system prompt for an LLM agent, persona, or assistant — distilled prompt-engineering best practice tuned for modern Claude models
+description: Write or revise a system prompt for an LLM agent or assistant — distilled prompt-engineering best practice tuned for modern Claude models
 user_invocable: true
 ---
 
 # Prompt Engineering
 
-How to **write or edit the system-prompt text** of an LLM agent, persona, or assistant so it is
-clear, consistent, and tuned for the way modern Claude models follow instructions. This is the
-*craft of the text* — not the mechanical wiring (where the prompt is stored, how it's registered,
-what tools it's granted). Keep those concerns separate; this skill only shapes the words.
+How to **write or edit the system-prompt text** of an LLM agent or assistant so it is clear,
+consistent, and tuned for the way modern Claude models follow instructions. This is the *craft of
+the text* — not the mechanical wiring (where the prompt is stored, how it's registered, what tools
+it's granted). Keep those concerns separate; this skill only shapes the words.
 
 ## The single most important rule: don't repeat the shared base
 
 Most agent prompts are layered **on top of** a shared base — a global system prompt, common
-guardrails, an auto-assembled roster/context block, the current date, retrieved context, etc. The
-full prompt the model sees is usually `your text + shared base + injected context`.
+guardrails, an auto-assembled context block, the current date, retrieved context, etc. The full
+prompt the model sees is usually `your text + shared base + injected context`.
 
-So your prompt should contain **only** what is unique to *this* agent: its **identity, tone, domain
+So your prompt should contain **only** what is unique to *this* agent: its **role, behavior, domain
 expertise, and its own boundaries**. It must NOT restate anything the shared layer already provides.
 
 Common things that usually live in a shared layer — do **not** repeat them in an individual prompt:
@@ -29,19 +29,18 @@ Common things that usually live in a shared layer — do **not** repeat them in 
 | Tool & approval discipline (don't retry rejected actions) | shared guardrails |
 | Generic safety / refusal rules | shared guardrails |
 | Available tools and how to call them | tool definitions / runtime |
-| Team roster, available agents, delegation rules | assembled context |
 | Today's date, environment, retrieved documents | assembled context |
 
 If you catch yourself writing "be honest", "be concise", or "you can use these tools…" — stop.
 It's probably already there, and duplicating it dilutes the prompt and invites drift. **Read the
 shared base first** so you know exactly what you're standing on.
 
-## House shape (a clean default)
+## A clean default shape
 
-A short identity prompt reads best as **plain prose under simple labels**, not heavy XML:
+A focused system prompt reads best as **plain prose under simple labels**, not heavy XML:
 
 ```
-You are <Name>, a <one-line role>.
+You are a <one-line role>.
 
 Role:
 - <what this agent is for, in 1–3 bullets>
@@ -53,22 +52,20 @@ Boundaries:
 - <what it must NOT claim or do; must match its real capability>
 ```
 
-- **Opening line first.** `You are <Name>, a <role>.` anchors identity — it is foundational, not
-  decorative. The label order is deliberate: identity → what it does → how it behaves → what it must
-  not do. Put critical, identity-setting instructions at the top, where the model weights them most.
-- **Single, distinct `Name`.** Use a clear name — especially if it's the word a human types to
-  address the agent.
+- **Lead with the role.** `You are a <role>.` anchors what the agent is — it is foundational, not
+  decorative. The label order is deliberate: who it is → what it does → how it behaves → what it must
+  not do. Put critical, defining instructions at the top, where the model weights them most.
 - **Prose under labels, not `<xml_tags>`.** XML structure earns its place when you're mixing
-  instructions, context, and examples in a long prompt. A short identity text doesn't need it —
-  prefer the simple `Role:` / `How you work:` / `Boundaries:` labels and stay consistent.
-- **`Boundaries:` only when the agent is genuinely limited.** A general orchestrator may have none;
-  a read-only specialist does. State limits as capability facts (e.g. *"read-only — never claim to
+  instructions, context, and examples in a long prompt. A short prompt doesn't need it — prefer the
+  simple `Role:` / `How you work:` / `Boundaries:` labels and stay consistent.
+- **`Boundaries:` only when the agent is genuinely limited.** A general assistant may have none; a
+  read-only specialist does. State limits as capability facts (e.g. *"read-only — never claim to
   have written or shipped anything"*).
 
 ## Principles (the distilled best practice)
 
 Drawn from the Anthropic and OpenAI prompting guides and general system-prompt practice, kept to
-what actually matters for a short prompt:
+what actually matters:
 
 1. **Be specific, not fuzzy.** Replace vague adjectives with concrete behavior. *"Browse the tree,
    open the relevant files, and search the code before answering"* beats *"be thorough."* The
@@ -101,15 +98,14 @@ what actually matters for a short prompt:
     across the whole text (e.g. "warm but efficient", or "precise and references paths"). A jarring
     or wandering voice reads as untrustworthy.
 12. **Examples only when they earn their place.** A short worked example fixes tone/format better
-    than description — but a short identity prompt rarely needs one. Add it only if behavior keeps
-    drifting.
+    than description — but a short prompt rarely needs one. Add it only if behavior keeps drifting.
 
 ## Workflow
 
 ### Writing a new prompt
 1. **Read the shared base** (global system prompt / guardrails) — know what is already provided so
    you don't repeat it.
-2. **One-line the role** — finish `You are <Name>, a <role>.` and a one-sentence objective.
+2. **One-line the role** — finish `You are a <role>.` and a one-sentence objective.
 3. **Draft `Role:` / `How you work:` / `Boundaries:`** as plain-prose bullets.
 4. **Pass it through the principles above** — cut anything that duplicates the base; soften any
    shouting; make every fuzzy line concrete.
@@ -122,40 +118,40 @@ what actually matters for a short prompt:
    (tighten Boundaries).
 3. **Make the smallest change that fixes it.** Working prompts are load-bearing; don't rewrite a
    whole text to fix one line.
-4. **Check the agent's description / blurb still matches** if the role shifted.
+4. **Check the agent's description still matches** if the role shifted.
 5. **Re-run the checklist** and verify a real turn (below).
 
 ## Self-review checklist
 
-- [ ] Opens with `You are <Name>, a <role>.`; name is clear and distinct.
+- [ ] Leads with the role (`You are a <role>.`); the role is clear and specific.
 - [ ] Contains **nothing** already in the shared base / injected context.
 - [ ] Uses the `Role:` / `How you work:` / `Boundaries:` prose shape — no stray XML.
 - [ ] Every line is concrete and actionable (colleague test passes).
 - [ ] No emphatic shouting (`CRITICAL`/`MUST`/`ALWAYS`) except for real safety limits.
 - [ ] `Boundaries:` match the agent's real capability; no claim it can't back up.
 - [ ] Consistent terminology; no contradiction with the agent's description or scope.
-- [ ] Concise — an identity text, not an essay.
+- [ ] Concise — a focused instruction text, not an essay.
 
 ## Verify
 
 - If a snapshot/golden test covers the assembled prompt, update or confirm it.
-- In a real turn, address the agent and confirm the tone/scope/boundaries read as intended, and that
-  it doesn't echo shared-layer language back.
+- In a real turn, exercise the agent and confirm the scope/behavior/boundaries read as intended, and
+  that it doesn't echo shared-layer language back.
 
 ## Worked example (before → after a tune)
 
-A specialist that kept *suggesting* actions instead of taking them, and over-hedged:
+A code agent that kept *suggesting* actions instead of taking them, and over-hedged:
 
 ```
 # Before — fuzzy + shouting + repeats the base
-You are Sam. You MUST ALWAYS be honest and helpful and reply to the user.
+You MUST ALWAYS be honest and helpful and reply to the user.
 You should probably look at the code and maybe open an issue if it seems right.
 
 # After — concrete, scoped, no base duplication, no shouting
-You are Sam, a software engineer on the team.
+You are a software engineering agent that analyses code across the team's repositories.
 
 Role:
-- You read and analyse code and issues across the team's repositories.
+- You read and analyse code and issues to answer questions and surface problems.
 
 How you work:
 - Browse the tree, open the relevant files, and search the code before answering — ground
