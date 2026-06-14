@@ -27,6 +27,7 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 - **typescript-types** — decision framework for shared vs local types, organization by domain
 - **api-error-handling** — consistent error shape, OpenAPI-documented, specific status codes, disciplined `try/catch`, typed error classes
 - **prompt-engineering** — write or revise an LLM agent/assistant system prompt: don't repeat the shared base, the `Role:`/`How you work:`/`Boundaries:` shape, and 12 distilled principles tuned for modern Claude models
+- **self-review** — adversarial senior-reviewer recipe for a diff: get the change, judge against a priority lens (duplication, altitude, layering, boundary types, scope), and emit findings + a reviewer guide; read-only
 - **obsidian-daily-notes** — summarizes conversations, decisions, tasks and ideas into Obsidian daily notes on disk; previews before writing and proactively offers a write at the end of meaningful conversations
 
 ### rules
@@ -39,6 +40,7 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 - **branch-discipline** — at the start of new work, confirm the current branch matches the task and surface uncommitted changes
 - **planning-discipline** — every feature plan leads with the goal, shows a file tree with line deltas, calls out type/scope changes, lists risks and follow-ups, and surfaces open questions before execution
 - **worktree-discipline** — when multiple agents share a repo, isolate each in a sibling git worktree (`../<repo>-worktrees/<branch>`); track it and auto-remove it (with a dirty/unpushed safety check) once the work is merged or done
+- **self-review-discipline** — before opening a PR, adversarially review your own full diff for duplication, wrong-altitude code, and sprawling decision logic; emit actionable findings ordered by severity; propose, don't rubber-stamp or silently edit
 
 ### agents
 
@@ -72,6 +74,7 @@ Each asset here came from one of these projects (for traceability — the origin
 - `jmpr` — nothing extracted (design-system too specific; kept in place)
 - `zebr-app-cms` — `add-task`, `todos`, `alpine-js`, `typescript-types` (generalized from `create-type`), `pre-pr-checklist`
 - `eclario` — `code-hygiene` (from `thinking-reasoning.mdc` + conventions), `api-layer-discipline` (generalized from `smart-mirror-api-architecture.mdc`)
+- `albert` — `self-review` skill + `self-review-discipline` rule (generalized from the `self-review` skill — project-specific spec/status files and persona/tool examples stripped)
 
 ## Adding a new asset
 
