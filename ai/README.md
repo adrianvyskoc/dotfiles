@@ -24,6 +24,7 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 ### skills
 
 - **alpine-js** — idiomatic Alpine.js for CDN-loaded, server-rendered HTML/JSX (no build step)
+- **modern-javascript** — world-class modern JS/TS using the newest stable features (ES2020–ES2026): `?.`/`??`, `structuredClone`, `Object.groupBy`, immutable array methods, Iterator/Set helpers, `Promise.withResolvers`, Temporal, explicit resource management — in an ESM, const-first, async/await, typed-result style
 - **typescript-types** — decision framework for shared vs local types, organization by domain
 - **api-error-handling** — consistent error shape, OpenAPI-documented, specific status codes, disciplined `try/catch`, typed error classes
 - **prompt-engineering** — write or revise an LLM agent/assistant system prompt: don't repeat the shared base, the `Role:`/`How you work:`/`Boundaries:` shape, and 12 distilled principles tuned for modern Claude models
