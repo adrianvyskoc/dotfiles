@@ -13,6 +13,8 @@ Claude Code assets extracted from past projects and made generic enough to drop 
 
 Each asset has frontmatter with a `description:` field so `aic` can list them.
 
+Project installs **copy** into `<project>/.claude/` (self-contained, committable). User installs (`--user`/`--global`) **symlink** into `~/.claude/` so they track this repo — edits and `git pull` propagate without re-running `aic`. (Rules always append to a `CLAUDE.md` rather than copy or symlink.)
+
 ## Available assets
 
 ### commands
@@ -45,12 +47,14 @@ Each asset has frontmatter with a `description:` field so `aic` can list them.
 
 ### agents
 
-- **code-reviewer** — reviews a diff/PR against project rules, returns a structured punch-list (read-only)
-- **type-consolidator** — finds duplicate type definitions and proposes a consolidation plan (propose-first)
+- **code-reviewer** — reviews a diff/PR against project rules and conventions; returns a structured punch-list (read-only)
+- **debugger** — investigates a reproducible bug (failing test, stack trace, wrong behavior) down to root cause, then proposes a small targeted fix + a test to lock it (read-mostly)
+- **security-reviewer** — reviews a diff/PR for exploitable vulnerabilities, ranked by severity with a concrete attack path + minimal fix (read-only)
+- **type-consolidator** — finds duplicate/near-duplicate TypeScript type definitions and proposes a consolidation plan (propose-first)
 
 ## Using `aic`
 
-The name stands for **AI copy** — it copies assets out of this library into a project (or globally). Short to type, same shape as the other three-letter helpers in `.my_aliases` (`gbl`, `hlp`).
+The name stands for **AI copy** — it installs assets out of this library into a project (copied) or onto your machine user-wide (symlinked). Short to type, same shape as the other three-letter helpers in `.my_aliases` (`gbl`, `hlp`).
 
 `setup.sh` symlinks this folder to `~/.ai`, so `aic` can find it from anywhere.
 
@@ -58,12 +62,15 @@ The name stands for **AI copy** — it copies assets out of this library into a 
 aic                              # list everything
 aic alpine-js                    # copy into ./.claude/skills/alpine-js/
 aic alpine-js ~/projects/foo     # copy into ~/projects/foo/.claude/skills/alpine-js/
-aic todos --global               # install globally at ~/.claude/commands/todos.md
+
+# User scope: symlink into ~/.claude/ so it tracks this repo (--global is an alias).
+aic code-reviewer --user         # symlink ~/.claude/agents/code-reviewer.md -> ~/.ai/agents/...
+aic todos -u                     # symlink ~/.claude/commands/todos.md -> ~/.ai/commands/...
 
 # Rules append to a CLAUDE.md by default (same dest semantics as other categories):
 aic code-hygiene                 # append to ./CLAUDE.md (created if missing)
 aic code-hygiene ~/projects/foo  # append to ~/projects/foo/CLAUDE.md
-aic code-hygiene --global        # append to ~/.claude/CLAUDE.md
+aic code-hygiene --user          # append to ~/.claude/CLAUDE.md
 aic code-hygiene --append FILE   # append to an arbitrary file
 aic code-hygiene --stdout        # print to terminal (for piping)
 ```

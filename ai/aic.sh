@@ -2,7 +2,7 @@
 # Provides the `aic` command (= "AI copy") for copying assets out of ~/.ai/ into projects.
 
 # ---- AI library ----
-aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--global|--stdout|--append FILE])
+aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--user|--global|--stdout|--append FILE])
   # Let empty globs produce nothing instead of an error (default in bash; zsh needs null_glob).
   [ -n "$ZSH_VERSION" ] && setopt localoptions null_glob
 
@@ -39,8 +39,8 @@ aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--global|--stdout
         printf '%s\n' "${entries[@]}" | column -t -s $'\t'
       fi
     done
-    printf '\nUsage: aic <name> [dest]         copy into <dest> (rules: append to <dest>/CLAUDE.md)\n'
-    printf '       aic <name> --global        write into ~/.claude/ (rules: ~/.claude/CLAUDE.md)\n'
+    printf '\nUsage: aic <name> [dest]         copy into <dest>/.claude/ (rules: append to <dest>/CLAUDE.md)\n'
+    printf '       aic <name> --user|-u       symlink into ~/.claude/ (alias --global; rules: append to ~/.claude/CLAUDE.md)\n'
     printf '       aic <name> --stdout        rules only: print to stdout\n'
     printf '       aic <name> --append FILE   rules only: append to a specific file\n'
     return 0
@@ -52,7 +52,7 @@ aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--global|--stdout
   local mode="copy" dest="." append_file=""
   while [ $# -gt 0 ]; do
     case "$1" in
-      --global|-g) mode="global"; shift ;;
+      --user|-u|--global|-g) mode="global"; shift ;;
       --stdout) mode="stdout"; shift ;;
       --append)
         mode="append"
@@ -107,20 +107,30 @@ aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--global|--stdout
     return 0
   fi
 
-  # Non-rules: copy into .claude/<category>/
+  # Non-rules: install into .claude/<category>/
   if [ "$mode" = "append" ] || [ "$mode" = "stdout" ]; then
     echo "aic: --append / --stdout only work for rules" >&2
     return 1
   fi
 
-  local target
+  # User scope (--user/--global): symlink back to ~/.ai so installs track the
+  # dotfiles repo — edits and `git pull` propagate without re-running aic.
   if [ "$mode" = "global" ]; then
-    target="$HOME/.claude/$category"
-  else
-    target="$dest/.claude/$category"
+    local target="$HOME/.claude/$category"
+    mkdir -p "$target"
+    if [ "$category" = "skills" ]; then
+      ln -sfn "$src" "$target/$name"
+      echo "Linked $target/$name -> $src"
+    else
+      ln -sfn "$src" "$target/$name.md"
+      echo "Linked $target/$name.md -> $src"
+    fi
+    return 0
   fi
-  mkdir -p "$target"
 
+  # Project scope: copy a self-contained snapshot so the project stays portable.
+  local target="$dest/.claude/$category"
+  mkdir -p "$target"
   if [ "$category" = "skills" ]; then
     cp -R "$src" "$target/"
     echo "Copied $src -> $target/$name/"
