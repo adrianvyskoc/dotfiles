@@ -36,7 +36,7 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 ### rules
 
 - **code-hygiene** — explain before implement, prefer explicit, ask when unclear, no TODOs without context
-- **pre-pr-checklist** — the `typecheck → lint → format → build` gate
+- **pre-pr-checklist** — the `typecheck → lint → format → build` gate, plus a PR description that ends with manual post-merge steps and how to test
 - **api-layer-discipline** — thin routes, services own data access + business logic, factory DI, explicit types at boundaries
 - **testing-discipline** — don't write tests unprompted; propose coverage gaps but ask before implementing
 - **commit-discipline** — never commit or push without explicit approval; use Conventional Commits format
