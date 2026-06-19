@@ -22,6 +22,7 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 - **add-task** — creates `tasks/<slug>.md` with a standard planning template
 - **todos** — lists all files in `tasks/` with status + one-line goal
 - **git-state** — audits every repo (siblings + submodules) under a path for branch/dirtiness/open PRs; with `--reset`, stashes + returns each to its default branch
+- **worktree** — spins up / tears down git worktrees at a predictable sibling path (`../<repo>-worktrees/<branch>`); lists them, and removes them only after a dirty/unpushed safety check (automates the worktree-discipline rule)
 
 ### skills
 
