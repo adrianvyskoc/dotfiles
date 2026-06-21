@@ -19,6 +19,7 @@ Target modern runtimes (Node 20+, evergreen browsers, current TypeScript). Reach
 7. **No `any`.** Use `unknown` and narrow. Public/exported functions get **explicit input and return types** — don't rely on inference at boundaries.
 8. **Validate external input at the boundary.** Types vanish at runtime; parse untrusted data (env, request bodies, API responses) with Zod/Valibot before it reaches core logic.
 9. **Formatting (Prettier):** single quotes, semicolons, trailing commas (`all`), 2-space indent, ~100 char width.
+10. **Ternaries: one level only.** A single `cond ? a : b` is fine for choosing a value. **Never nest them** — `a ? b : c ? d : e` is unreadable, no matter how it's indented. When a choice has more than two branches, use `if`/`else if` or `switch` (or extract a small named helper that returns the value). A `let` reassigned in an `if`/`else` is preferable to a nested ternary.
 
 ---
 
@@ -357,6 +358,7 @@ const bytes = Uint8Array.fromBase64('aGk=');  // base64/hex <-> Uint8Array
 | `new Date()` math / moment.js                    | `Temporal` (where supported)                        |
 | `_privateField` convention                       | `#privateField`                                     |
 | `try`/`finally` to close a resource              | `using` / `await using` (where supported)           |
+| `a ? b : c ? d : e` (nested ternary)             | `if`/`else if` or `switch` (one-level ternary is OK) |
 | `require()` / `module.exports`                   | `import` / `export` (ESM)                           |
 
 ---
