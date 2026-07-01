@@ -23,6 +23,7 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 - **todos** — lists all files in `tasks/` with status + one-line goal
 - **git-state** — audits every repo (siblings + submodules) under a path for branch/dirtiness/open PRs; with `--reset`, stashes + returns each to its default branch
 - **worktree** — spins up / tears down git worktrees at a predictable sibling path (`../<repo>-worktrees/<branch>`); lists them, and removes them only after a dirty/unpushed safety check (automates the worktree-discipline rule)
+- **human-summary** — writes a quick colleague-style recap of the session (bug/change/what-was-done) so it doesn't read as AI-written; thin trigger for the `human-summary` skill, with optional register/language/length via args
 
 ### skills
 
@@ -33,6 +34,7 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 - **prompt-engineering** — write or revise an LLM agent/assistant system prompt: don't repeat the shared base, the `Role:`/`How you work:`/`Boundaries:` shape, and 12 distilled principles tuned for modern Claude models
 - **self-review** — adversarial senior-reviewer recipe for a diff: get the change, judge against a priority lens (duplication, altitude, layering, boundary types, scope), and emit findings + a reviewer guide; read-only
 - **obsidian-daily-notes** — summarizes conversations, decisions, tasks and ideas into Obsidian daily notes on disk; previews before writing and proactively offers a write at the end of meaningful conversations
+- **human-summary** — turns what we just worked on into a short summary that reads like a colleague typed it, not AI: default raw lowercase, no diacritics, no AI tells (no em dashes, essay transitions, rule-of-three); registers 1–3; manual/invoke-only
 
 ### rules
 
