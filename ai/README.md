@@ -35,6 +35,7 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 - **self-review** — adversarial senior-reviewer recipe for a diff: get the change, judge against a priority lens (duplication, altitude, layering, boundary types, scope), and emit findings + a reviewer guide; read-only
 - **obsidian-daily-notes** — summarizes conversations, decisions, tasks and ideas into Obsidian daily notes on disk; previews before writing and proactively offers a write at the end of meaningful conversations
 - **human-summary** — turns what we just worked on into a short summary that reads like a colleague typed it, not AI: default raw lowercase, no diacritics, no AI tells (no em dashes, essay transitions, rule-of-three); registers 1–3; manual/invoke-only
+- **frontend-development** — framework-agnostic rules for reactive frontend work: generic UI library discipline (check → use/extend/create), presentational generic components, logic in feature components + hooks/composables, local state first, mandatory design tokens, typed API layer, schema-based forms, handled async states, naming + a11y baseline
 
 ### rules
 
