@@ -43,7 +43,7 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 - **pre-pr-checklist** — the `typecheck → lint → format → build` gate
 - **api-layer-discipline** — thin routes, services own data access + business logic, factory DI, explicit types at boundaries
 - **testing-discipline** — don't write tests unprompted; propose coverage gaps but ask before implementing
-- **commit-discipline** — never commit or push without explicit approval; use Conventional Commits format
+- **commit-discipline** — never commit or push without explicit approval; one-line Conventional Commits messages, no body
 - **branch-discipline** — at the start of new work, confirm the current branch matches the task and surface uncommitted changes
 - **planning-discipline** — every feature plan leads with the goal, shows a file tree with line deltas, calls out type/scope changes, lists risks and follow-ups, and surfaces open questions before execution
 - **worktree-discipline** — when multiple agents share a repo, isolate each in a sibling git worktree (`../<repo>-worktrees/<branch>`); track it and auto-remove it (with a dirty/unpushed safety check) once the work is merged or done

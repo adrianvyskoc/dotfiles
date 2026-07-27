@@ -1,5 +1,5 @@
 ---
-description: Never commit or push without explicit approval; use Conventional Commits format when proposing messages
+description: Never commit or push without explicit approval; propose one-line Conventional Commits messages with no body
 ---
 
 ## Commit discipline
@@ -16,18 +16,20 @@ description: Never commit or push without explicit approval; use Conventional Co
   - **Why:** prevents the slow drift where one approval quietly becomes a blanket permission.
   - **How to apply:** ask again for the next commit, even if they feel related.
 
-- **Use Conventional Commits format when proposing messages.**
+- **Use Conventional Commits format when proposing messages — subject line only.**
   - Subject: `type(scope): short imperative summary` — ~50 chars, lowercase, no trailing period
   - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `build`, `ci`
   - Scope is optional but helpful when the repo has clear areas (e.g. `feat(aliases): …`)
-  - Blank line, then a body explaining the **why** (not the **what**) when non-trivial — the diff already shows what changed
-  - Example:
+  - Examples:
     ```
     feat(hlp): add alias discovery command
-
-    Grepping through .my_aliases was slow during pairing.
-    hlp lists aliases with their one-line descriptions.
+    fix(aic): keep existing ~/.claude symlinks on reinstall
+    chore(deps): drop oh-my-zsh in favor of plain zsh config
     ```
+
+- **No commit body. Ever.** One line, concise and to the point — nothing after the subject.
+  - **Why:** the diff already shows what changed, and bodies drift into restating it. A repo of one-line subjects stays scannable in `git log --oneline`; prose belongs in the PR description, not the commit.
+  - **How to apply:** if the summary does not fit in one line, the commit is doing too much — split it. Never pad a weak subject with an explanatory paragraph. Machine trailers (`Co-Authored-By:`, `Refs:`) are footers, not a body, and are fine.
 
 - **Show the drafted message before committing.** Once the user says yes, paste the message you're about to use and give them a chance to tweak it before it lands.
   - **Why:** cheaper to edit a draft than to amend a commit.
