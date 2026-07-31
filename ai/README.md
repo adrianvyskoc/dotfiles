@@ -24,6 +24,7 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 - **git-state** — audits every repo (siblings + submodules) under a path for branch/dirtiness/open PRs; with `--reset`, stashes + returns each to its default branch
 - **worktree** — spins up / tears down git worktrees at a predictable sibling path (`../<repo>-worktrees/<branch>`); lists them, and removes them only after a dirty/unpushed safety check (automates the worktree-discipline rule)
 - **human-summary** — writes a quick colleague-style recap of the session (bug/change/what-was-done) so it doesn't read as AI-written; thin trigger for the `human-summary` skill, with optional register/language/length via args
+- **autopilot** — runs the task without stopping to ask decision questions: decides autonomously, logs every decision, and reports them all at the end; commit/push and destructive-action limits still apply
 
 ### skills
 
