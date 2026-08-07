@@ -30,6 +30,7 @@ Pick the type that matches what the user is trying to create. Always say your pi
 | **command** | User-invoked action via `/name`. Explicit trigger; does something concrete (creates a file, lists state, runs a gate). | `ai/commands/<name>.md` |
 | **skill** | Context-sensitive domain knowledge auto-invoked by keyword/description match. "When working on X, know Y." | `ai/skills/<name>/SKILL.md` (folder) |
 | **agent** | Delegated work with its own context — code reviews, consolidation proposals, parallel research. | `ai/agents/<name>.md` |
+| **project rule** | Applies to **one** repo and must never be committed to it — that repo's own paths, tooling quirks, personal conventions. | `ai/projects/<name>.md` — hand off to the **`project-rules`** skill, not this one |
 
 ### Heuristics
 
@@ -44,6 +45,7 @@ Pick the type that matches what the user is trying to create. Always say your pi
 - **Command vs skill** — command is user-typed (`/name`); skill is auto-triggered by context. If the user wants to invoke it explicitly, command. If Claude should notice on its own, skill.
 - **Skill vs agent** — skill runs in the main context; agent runs in its own. If the work is big, read-only, or parallelizable, agent. If it's knowledge to apply inline, skill.
 - **Rule vs command** — almost never ambiguous, but: if the user says "always X before committing", that's a rule, not a `/commit` command.
+- **Rule vs project rule** — a rule is generic and installable into any repo; a project rule names one repo's paths, commands and quirks and is never committed to it. If the content only makes sense in a single repo, or the user says "just for me" / "don't commit this", stop and use the `project-rules` skill instead.
 
 Example: "I always want Claude to run typecheck before opening a PR" → **rule** (always-on, guidance). Not a command (user isn't invoking it), not a skill (it's general discipline, not a domain).
 

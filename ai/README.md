@@ -76,6 +76,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 - **obsidian-daily-notes** — summarizes conversations, decisions, tasks and ideas into Obsidian daily notes on disk; previews before writing and proactively offers a write at the end of meaningful conversations
 - **human-summary** — turns what we just worked on into a short summary that reads like a colleague typed it, not AI: default raw lowercase, no diacritics, no AI tells (no em dashes, essay transitions, rule-of-three); registers 1–3; manual/invoke-only
 - **frontend-development** — framework-agnostic rules for reactive frontend work: generic UI library discipline (check → use/extend/create), presentational generic components, logic in feature components + hooks/composables, local state first, mandatory design tokens, typed API layer, schema-based forms, handled async states, naming + a11y baseline
+- **project-rules** — writes or extends a personal, non-team rule for the current repo in `~/.ai/projects/<name>.md`: routes team-vs-personal-vs-global before writing, wires the git-excluded `CLAUDE.local.md` stub via `aic --project`, and verifies every path it asserts (install with `--global` so it reaches from any repo)
 
 ### rules
 
@@ -99,6 +100,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 ### projects (personal, not installed by `aic`)
 
 - **ebox-app** — efabrica/ebox-app: never hand-edit the `pnpm sync:ai`-generated `CLAUDE.md`/`.claude/skills`/`.claude/agents`, which paths stay private, GitLab MRs instead of GitHub PRs, `EPIK-<n>/<slug>` branches, nested `.claude/worktrees/`
+- **eclario** — eclario/eclario-harness: issues labelled `app` are written in Slovak (title + body), as short as possible without dropping implementation detail, and carry a copy-pasteable `## Kontext pre agenta` block that an agent starting cold in `eclario-app` can run on; issue #80 is the reference
 
 ## Using `aic`
 
