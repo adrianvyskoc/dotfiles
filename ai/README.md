@@ -12,6 +12,7 @@ Claude Code assets extracted from past projects and made generic enough to drop 
 | `agents/`          | Subagent definitions                                      | `<project>/.claude/agents/`        |
 | `projects/`        | **Personal** per-project instructions (not for the team)  | imported by `<project>/CLAUDE.local.md` |
 | `claude-global.md` | Claude Code user-level memory                             | symlinked to `~/.claude/CLAUDE.md` by `setup.sh` |
+| `claude-settings.json` | Claude Code user settings (model, effort, plugins, theme) | symlinked to `~/.claude/settings.json` by `setup.sh` |
 
 Each asset has frontmatter with a `description:` field so `aic` can list them.
 
@@ -46,6 +47,12 @@ Why the indirection instead of writing the rules straight into `CLAUDE.local.md`
 - sibling git worktrees (`../<repo>-worktrees/<branch>`) don't inherit the main repo's `CLAUDE.local.md`; copying a one-line stub into each is trivial, copying full rules is not
 
 Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Claude Code's own session storage.
+
+## Settings
+
+`claude-settings.json` is symlinked to `~/.claude/settings.json`, so the model, effort level, enabled plugins, extra marketplaces and theme all come back on a fresh machine. Claude Code writes that file **in place** rather than replacing it, so changes made through `/config` or `claude plugin enable|disable` land in this repo and show up as a normal diff — verified, not assumed.
+
+`~/.claude/settings.local.json` is **not** linked. It is the per-machine override layer by design, and it is where anything host-specific belongs.
 
 ## Available assets
 

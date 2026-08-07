@@ -25,8 +25,12 @@ link_file "$DOTFILES_DIR/ai"                   "$HOME/.ai"
 
 # Claude Code user-level memory (~/.claude/CLAUDE.md). Per-project personal
 # instructions live in ai/projects/ and are reached through the ~/.ai symlink.
+# Claude Code writes settings.json in place, so edits made through /config land
+# in this repo instead of breaking the symlink. settings.local.json is machine
+# scoped by design and is deliberately not linked.
 mkdir -p "$HOME/.claude"
-link_file "$DOTFILES_DIR/ai/claude-global.md" "$HOME/.claude/CLAUDE.md"
+link_file "$DOTFILES_DIR/ai/claude-global.md"     "$HOME/.claude/CLAUDE.md"
+link_file "$DOTFILES_DIR/ai/claude-settings.json" "$HOME/.claude/settings.json"
 
 if ! grep -Fq "$SOURCE_LINE" "$HOME/.zshrc" 2>/dev/null; then
   {
