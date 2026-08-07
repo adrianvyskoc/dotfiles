@@ -4,16 +4,48 @@ Claude Code assets extracted from past projects and made generic enough to drop 
 
 ## Layout
 
-| Folder      | What it is                                               | Where it goes in a project         |
-| ----------- | -------------------------------------------------------- | ---------------------------------- |
-| `commands/` | Claude Code slash commands (`/add-task`, `/todos`, …)    | `<project>/.claude/commands/`      |
-| `skills/`   | Claude Code skills (each is a folder with a `SKILL.md`)  | `<project>/.claude/skills/`        |
-| `rules/`    | CLAUDE.md fragments — copy/paste into a project CLAUDE.md | merged into `<project>/CLAUDE.md`  |
-| `agents/`   | Subagent definitions                                     | `<project>/.claude/agents/`        |
+| Folder / file      | What it is                                                | Where it goes in a project         |
+| ------------------ | --------------------------------------------------------- | ---------------------------------- |
+| `commands/`        | Claude Code slash commands (`/add-task`, `/todos`, …)     | `<project>/.claude/commands/`      |
+| `skills/`          | Claude Code skills (each is a folder with a `SKILL.md`)   | `<project>/.claude/skills/`        |
+| `rules/`           | CLAUDE.md fragments — copy/paste into a project CLAUDE.md  | merged into `<project>/CLAUDE.md`  |
+| `agents/`          | Subagent definitions                                      | `<project>/.claude/agents/`        |
+| `projects/`        | **Personal** per-project instructions (not for the team)  | imported by `<project>/CLAUDE.local.md` |
+| `claude-global.md` | Claude Code user-level memory                             | symlinked to `~/.claude/CLAUDE.md` by `setup.sh` |
 
 Each asset has frontmatter with a `description:` field so `aic` can list them.
 
 Project installs **copy** into `<project>/.claude/` (self-contained, committable). User installs (`--user`/`--global`) **symlink** into `~/.claude/` so they track this repo — edits and `git pull` propagate without re-running `aic`. (Rules always append to a `CLAUDE.md` rather than copy or symlink.)
+
+## Personal per-project rules
+
+`rules/`, `commands/`, `skills/` and `agents/` are things a *team* can share. `projects/` is the opposite: instructions that apply to one repo but must never be committed to it — because the repo's `CLAUDE.md` belongs to colleagues too.
+
+Claude Code loads `CLAUDE.local.md` from a project root automatically, alongside `CLAUDE.md`. So the pattern is a **one-line stub** in the project that imports the real content from this repo.
+
+Run this once in any repo — it is idempotent, so it doubles as the "is this wired up?" check:
+
+```console
+$ aic --project
+created  /Users/you/.ai/projects/myrepo.md
+created  /path/to/myrepo/CLAUDE.local.md
+updated  /path/to/myrepo/.git/info/exclude
+```
+
+It does three things, skipping whatever is already in place:
+
+1. creates `projects/<name>.md` here (seeded with a frontmatter header) if it doesn't exist
+2. points the repo's `CLAUDE.local.md` at it via `@~/.ai/projects/<name>.md` — **appending** if the file already has other content
+3. adds `CLAUDE.local.md` to `.git/info/exclude` — local-only, so the shared `.gitignore` is never touched
+
+`<name>` defaults to the repo name and is taken from `--git-common-dir`, so running it inside a **worktree** still resolves to the main repo (`feature-x/` → `myrepo`), reuses the same rules file, and drops a fresh stub in that worktree. Pass an explicit name to override: `aic --project ebox-app`.
+
+Why the indirection instead of writing the rules straight into `CLAUDE.local.md`:
+
+- the content is versioned here and survives a machine rebuild — `setup.sh` links `~/.ai`, so `~/.ai/projects/<project>.md` exists with no extra symlink
+- sibling git worktrees (`../<repo>-worktrees/<branch>`) don't inherit the main repo's `CLAUDE.local.md`; copying a one-line stub into each is trivial, copying full rules is not
+
+Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Claude Code's own session storage.
 
 ## Available assets
 
@@ -56,6 +88,10 @@ Project installs **copy** into `<project>/.claude/` (self-contained, committable
 - **debugger** — investigates a reproducible bug (failing test, stack trace, wrong behavior) down to root cause, then proposes a small targeted fix + a test to lock it (read-mostly)
 - **security-reviewer** — reviews a diff/PR for exploitable vulnerabilities, ranked by severity with a concrete attack path + minimal fix (read-only)
 - **type-consolidator** — finds duplicate/near-duplicate TypeScript type definitions and proposes a consolidation plan (propose-first)
+
+### projects (personal, not installed by `aic`)
+
+- **ebox-app** — efabrica/ebox-app: never hand-edit the `pnpm sync:ai`-generated `CLAUDE.md`/`.claude/skills`/`.claude/agents`, which paths stay private, GitLab MRs instead of GitHub PRs, `EPIK-<n>/<slug>` branches, nested `.claude/worktrees/`
 
 ## Using `aic`
 

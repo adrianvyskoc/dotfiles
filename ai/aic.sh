@@ -15,7 +15,7 @@ aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--user|--global|-
   # List mode: no args or --list/-l
   if [ -z "$1" ] || [ "$1" = "--list" ] || [ "$1" = "-l" ]; then
     local cat cat_dir item name desc entries
-    for cat in commands skills rules agents; do
+    for cat in commands skills rules agents projects; do
       cat_dir="$ai_dir/$cat"
       [ -d "$cat_dir" ] || continue
       entries=()
@@ -43,6 +43,70 @@ aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--user|--global|-
     printf '       aic <name> --user|-u       symlink into ~/.claude/ (alias --global; rules: append to ~/.claude/CLAUDE.md)\n'
     printf '       aic <name> --stdout        rules only: print to stdout\n'
     printf '       aic <name> --append FILE   rules only: append to a specific file\n'
+    printf '       aic --project|-p [name]    wire up personal per-project rules in the current repo\n'
+    return 0
+  fi
+
+  # Personal per-project rules: ensure this repo loads ~/.ai/projects/<name>.md
+  # through a gitignored CLAUDE.local.md stub. Idempotent — reports what was
+  # already in place and only creates what is missing.
+  if [ "$1" = "--project" ] || [ "$1" = "-p" ]; then
+    shift
+    local repo_root common_dir main_root proj rules_file local_file exclude_file import_line
+    if ! repo_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+      echo "aic: not inside a git repository" >&2
+      return 1
+    fi
+    # --git-common-dir points at the MAIN repo's .git even from a worktree, so the
+    # project name comes from the repo and not from the worktree's branch folder.
+    common_dir=$(cd "$repo_root" && cd "$(git rev-parse --git-common-dir)" && pwd)
+    main_root=$(dirname "$common_dir")
+    proj="${1:-$(basename "$main_root")}"
+    rules_file="$ai_dir/projects/$proj.md"
+    local_file="$repo_root/CLAUDE.local.md"
+    exclude_file="$common_dir/info/exclude"
+    import_line="@~/.ai/projects/$proj.md"
+
+    if [ -f "$rules_file" ]; then
+      echo "ok       $rules_file"
+    else
+      mkdir -p "$(dirname "$rules_file")"
+      cat > "$rules_file" <<EOF
+---
+description: Personal (non-team) instructions for $proj — loaded via a gitignored CLAUDE.local.md stub, never checked into the repo
+---
+
+## $proj — personal notes
+
+Repo: \`$main_root\`
+
+These are **my** rules. Anything the whole team should follow belongs in the
+repo's own committed config instead.
+EOF
+      echo "created  $rules_file"
+    fi
+
+    if [ -f "$local_file" ] && grep -Fqx "$import_line" "$local_file"; then
+      echo "ok       $local_file"
+    elif [ -f "$local_file" ]; then
+      printf '\n%s\n' "$import_line" >> "$local_file"
+      echo "appended $local_file"
+    else
+      echo "$import_line" > "$local_file"
+      echo "created  $local_file"
+    fi
+
+    # .git/info/exclude, never the shared .gitignore — colleagues must not see this.
+    # It lives in the common dir, so one entry covers every worktree of this repo.
+    if [ -f "$exclude_file" ] && grep -Fqx 'CLAUDE.local.md' "$exclude_file"; then
+      echo "ok       $exclude_file"
+    else
+      mkdir -p "$(dirname "$exclude_file")"
+      echo 'CLAUDE.local.md' >> "$exclude_file"
+      echo "updated  $exclude_file"
+    fi
+
+    printf '\nEdit rules: %s %s\n' "${EDITOR:-vi}" "$rules_file"
     return 0
   fi
 
@@ -82,7 +146,11 @@ aic() {  ## copy AI asset from ~/.ai library (aic [name] [dest|--user|--global|-
     src="$ai_dir/skills/$name"
   fi
   if [ -z "$category" ]; then
-    echo "aic: no asset named '$name'. Run 'aic' to see available assets." >&2
+    if [ -f "$ai_dir/projects/$name.md" ]; then
+      echo "aic: '$name' is a per-project rules file — wire it up with: aic --project $name" >&2
+    else
+      echo "aic: no asset named '$name'. Run 'aic' to see available assets." >&2
+    fi
     return 1
   fi
 
