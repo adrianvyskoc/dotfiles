@@ -89,6 +89,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 - **planning-discipline** — every feature plan leads with the goal, shows a file tree with line deltas, calls out type/scope changes, lists risks and follow-ups, and surfaces open questions before execution
 - **worktree-discipline** — when multiple agents share a repo, isolate each in a sibling git worktree (`../<repo>-worktrees/<branch>`); track it and auto-remove it (with a dirty/unpushed safety check) once the work is merged or done
 - **self-review-discipline** — before opening a PR, adversarially review your own full diff for duplication, wrong-altitude code, and sprawling decision logic; emit actionable findings ordered by severity; propose, don't rubber-stamp or silently edit
+- **name-greeting** — open every answer by addressing the user by name in a meaningful way (placeholders for name/nicknames/tone); doubles as a canary — if the greeting disappears, the rule was dropped or overridden
 
 ### agents
 
