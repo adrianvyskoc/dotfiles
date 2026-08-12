@@ -99,7 +99,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 
 ### projects (personal, not installed by `aic`)
 
-- **ebox-app** — efabrica/ebox-app: never hand-edit the `pnpm sync:ai`-generated `CLAUDE.md`/`.claude/skills`/`.claude/agents`, which paths stay private, GitLab MRs instead of GitHub PRs, `EPIK-<n>/<slug>` branches, nested `.claude/worktrees/`
+- **ebox-app** — efabrica/ebox-app: never hand-edit the `pnpm sync:ai`-generated `CLAUDE.md`/`.claude/skills`/`.claude/agents`, which paths stay private, GitLab MRs instead of GitHub PRs, `<TICKET-n>/<slug>` branch names suggested on every implemented feature, nested `.claude/worktrees/`
 - **eclario** — eclario/eclario-harness: issues labelled `app` are written in Slovak (title + body), as short as possible without dropping implementation detail, and carry a copy-pasteable `## Kontext pre agenta` block that an agent starting cold in `eclario-app` can run on; issue #80 is the reference
 
 ## Using `aic`

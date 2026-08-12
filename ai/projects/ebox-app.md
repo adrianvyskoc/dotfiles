@@ -43,11 +43,12 @@ The remote is self-hosted GitLab (`git.efabrica.sk`).
 - **Why:** the lefthook `pre-push` hook runs an `interactive: true` job (`commands/check-master-push.sh`) that waits for a typed confirmation. An agent cannot answer that prompt, so the push just hangs.
 - **How to apply:** this changes *how* to push, never *whether* — the standing rule that every push needs my explicit approval first still applies in full. `--no-verify` also skips the hook's `lint`, `format` and `typecheck` jobs, so run `pnpm lint && pnpm format && pnpm typecheck` manually before pushing instead of relying on the hook.
 
-### Branch naming
+### Suggest a branch name for every implemented feature
 
-Branches are `EPIK-<number>/<kebab-slug>` (e.g. `EPIK-15862/stats-drawer-design-fixes`).
+Branches are `<TICKET-KEY>/<kebab-slug>` — the ticket number first, then a short one-line kebab description (e.g. `EPIK-15862/stats-drawer-design-fixes`). The key is usually `EPIK-<n>` or `EPIKRO-<n>`, but any `<PREFIX>-<n>` project key is valid — what matters is that the ticket number leads the branch name.
 
-- **How to apply:** when starting new work, ask for the Jira ticket number if I have not given one — do not invent a branch name without the `EPIK-` prefix.
+- **Why:** the ticket key in the branch name is load-bearing downstream — the `CHANGELOG.md` entry and the MR title both take their Jira key from it.
+- **How to apply:** every time a feature gets implemented (or new work starts), proactively suggest a branch name in this format, unprompted. Ask for the ticket number if I have not given one — do not invent a branch name without a ticket prefix.
 
 ### Every finished change updates CHANGELOG.md
 
