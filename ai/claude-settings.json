@@ -4,7 +4,7 @@
       "Bash(git *)"
     ]
   },
-  "model": "opus",
+  "model": "claude-fable-5[1m]",
   "enabledPlugins": {
     "claude-code-setup@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
