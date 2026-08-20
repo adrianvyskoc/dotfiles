@@ -33,11 +33,14 @@ created  /path/to/myrepo/CLAUDE.local.md
 updated  /path/to/myrepo/.git/info/exclude
 ```
 
-It does three things, skipping whatever is already in place:
+It does four things, skipping whatever is already in place:
 
 1. creates `projects/<name>.md` here (seeded with a frontmatter header) if it doesn't exist
 2. points the repo's `CLAUDE.local.md` at it via `@~/.ai/projects/<name>.md` — **appending** if the file already has other content
 3. adds `CLAUDE.local.md` to `.git/info/exclude` — local-only, so the shared `.gitignore` is never touched
+4. symlinks any **project assets** — `projects/<name>/commands/*.md` and `projects/<name>/skills/*` — into the repo's `.claude/commands/` / `.claude/skills/`, adding each path to `.git/info/exclude`
+
+Project assets are the per-repo counterpart of the shared `commands/`/`skills/` folders: slash commands and skills that only make sense in one repo but must never be committed to it. The definition lives here (versioned, survives a machine rebuild); the repo only carries a git-excluded symlink, so colleagues see nothing — not even in `git status`. Symlinks land in the *current worktree's* `.claude/`, so rerun `aic --project` once per worktree.
 
 `<name>` defaults to the repo name and is taken from `--git-common-dir`, so running it inside a **worktree** still resolves to the main repo (`feature-x/` → `myrepo`), reuses the same rules file, and drops a fresh stub in that worktree. Pass an explicit name to override: `aic --project ebox-app`.
 
@@ -101,7 +104,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 
 ### projects (personal, not installed by `aic`)
 
-- **ebox-app** — efabrica/ebox-app: never hand-edit the `pnpm sync:ai`-generated `CLAUDE.md`/`.claude/skills`/`.claude/agents`, which paths stay private, GitLab MRs instead of GitHub PRs, `<TICKET-n>/<slug>` branch names suggested on every implemented feature, nested `.claude/worktrees/`
+- **ebox-app** — efabrica/ebox-app: never hand-edit the `pnpm sync:ai`-generated `CLAUDE.md`/`.claude/skills`/`.claude/agents`, which paths stay private, GitLab MRs instead of GitHub PRs, `<TICKET-n>/<slug>` branch names suggested on every implemented feature, nested `.claude/worktrees/`; ships a private `/review-task` command (`projects/ebox-app/commands/`) that reviews the branch against its Jira zadanie by composing the team `review-branch` skill
 - **eclario** — eclario/eclario-harness: issues labelled `app` are written in Slovak (title + body), as short as possible without dropping implementation detail, and carry a copy-pasteable `## Kontext pre agenta` block that an agent starting cold in `eclario-app` can run on; issue #80 is the reference
 
 ## Using `aic`

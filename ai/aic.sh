@@ -106,6 +106,32 @@ EOF
       echo "updated  $exclude_file"
     fi
 
+    # Project assets: projects/<name>/commands/*.md and projects/<name>/skills/*
+    # are symlinked into this worktree's .claude/ and hidden via .git/info/exclude,
+    # so the repo itself never sees them — nothing committed, nothing in git status.
+    local asset rel target
+    for asset in "$ai_dir/projects/$proj/commands"/*.md "$ai_dir/projects/$proj/skills"/*; do
+      [ -e "$asset" ] || continue
+      case "$asset" in
+        */commands/*) rel=".claude/commands/$(basename "$asset")" ;;
+        *)            rel=".claude/skills/$(basename "$asset")" ;;
+      esac
+      target="$repo_root/$rel"
+      if [ -L "$target" ] && [ "$(readlink "$target")" = "$asset" ]; then
+        echo "ok       $target"
+      elif [ -e "$target" ] || [ -L "$target" ]; then
+        echo "skipped  $target — exists and is not the expected symlink" >&2
+      else
+        mkdir -p "$(dirname "$target")"
+        ln -s "$asset" "$target"
+        echo "linked   $target"
+      fi
+      if ! grep -Fqx "$rel" "$exclude_file"; then
+        echo "$rel" >> "$exclude_file"
+        echo "updated  $exclude_file ($rel)"
+      fi
+    done
+
     printf '\nEdit rules: %s %s\n' "${EDITOR:-vi}" "$rules_file"
     return 0
   fi
