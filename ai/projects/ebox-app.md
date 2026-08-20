@@ -29,6 +29,10 @@ These are **my** rules. The team's rules live in the repo's `.ai/rules/` and are
 
 `CLAUDE.local.md` is not covered by the repo's `.gitignore` (which only lists `/CLAUDE.md`), so it is kept private via `.git/info/exclude` instead — never add it to the shared `.gitignore`.
 
+### Private /review-task command
+
+`/review-task [jira-url-or-key]` reviews the current branch against its Jira zadanie (fetches the ticket, runs the team `review-branch` checklist, reports requirement coverage). It is defined in the dotfiles at `~/.ai/projects/ebox-app/commands/review-task.md` and symlinked into `.claude/commands/` by `aic --project` — if it's missing in a fresh worktree or machine, rerun `aic --project` there. Never move it into `.ai/skills/` (that commits it to the team repo) or `.claude/skills/` (pruned by sync:ai).
+
 ### GitLab, not GitHub
 
 The remote is self-hosted GitLab (`git.efabrica.sk`).
