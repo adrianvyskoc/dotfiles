@@ -21,7 +21,7 @@ How to build reactive frontend UIs in any framework. Examples use JSX-ish pseudo
 9. **Variants via props, content via slots.** One Button with `variant`/`size` props — never PrimaryButton/DangerButton. Layout and content composition go through slots/children.
 10. **Every async view handles loading, error, and empty.** How is up to the project; that they're handled is not.
 11. **Naming baseline.** PascalCase components, `use*` hooks/composables, `on*` event handlers, file name = component name.
-12. **A11y baseline, enforced in the library.** Semantic HTML, keyboard operability, visible focus, labeled inputs, alt texts. Responsive is part of the definition of done.
+12. **A11y baseline, enforced in the library.** Semantic HTML (or native equivalent: `accessibilityRole`, `accessible`), keyboard operability (or native focus/touch-target sizing), visible focus, labeled inputs, alt texts. Responsive is part of the definition of done.
 
 ---
 
@@ -215,10 +215,10 @@ return <OrderTable rows={data} />;
 
 Enforced primarily in the generic library — fix it once there, every feature inherits it:
 
-- Semantic elements (`button` for actions, `a` for navigation, real `label` for every input).
-- Keyboard operability + visible focus for anything interactive; no `div onClick`.
+- Semantic elements (`button` for actions, `a` for navigation, real `label` for every input) — on native, the equivalent is `accessibilityRole`/`accessible`/`accessibilityLabel` on the underlying `Pressable`/`View`.
+- Keyboard operability + visible focus for anything interactive; no `div onClick` (native: adequate touch-target size and a visible pressed/focus state instead of keyboard focus).
 - `alt` on images; `aria-*` only where semantics can't do the job.
-- Responsive behavior is part of done — a component/view that breaks on small screens isn't finished.
+- Responsive behavior is part of done — a component/view that breaks on small screens (or, on native, other device sizes/orientations/safe areas) isn't finished.
 
 ---
 
