@@ -95,6 +95,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 - **worktree-discipline** — when multiple agents share a repo, isolate each in a sibling git worktree (`../<repo>-worktrees/<branch>`); track it and auto-remove it (with a dirty/unpushed safety check) once the work is merged or done
 - **self-review-discipline** — before opening a PR, adversarially review your own full diff for duplication, wrong-altitude code, and sprawling decision logic; emit actionable findings ordered by severity; propose, don't rubber-stamp or silently edit
 - **name-greeting** — open every answer by addressing the user by name in a meaningful way (placeholders for name/nicknames/tone); doubles as a canary — if the greeting disappears, the rule was dropped or overridden
+- **orchestration-discipline** — delegate to subagents only past a clear threshold (3+ parallel parts, bulk input, adversarial review); contracts on disk before parallel work; fixed brief template and return format; verify every phase (max two rounds); model pinned per role; parallel agents never touch shared files or git
 
 ### agents
 
@@ -102,6 +103,9 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 - **debugger** — investigates a reproducible bug (failing test, stack trace, wrong behavior) down to root cause, then proposes a small targeted fix + a test to lock it (read-mostly)
 - **security-reviewer** — reviews a diff/PR for exploitable vulnerabilities, ranked by severity with a concrete attack path + minimal fix (read-only)
 - **type-consolidator** — finds duplicate/near-duplicate TypeScript type definitions and proposes a consolidation plan (propose-first)
+- **fe-implementer** — builds one bounded piece of frontend work (component, composable, view, store slice) from a structured brief against a contract on disk; edits only the files the brief allows, checks the existing UI library before creating, runs the scoped gate, returns a short structured report; never touches shared files or git (opus)
+- **be-implementer** — builds one bounded piece of backend work (service, route module, schema, repository, job) from a structured brief against a contract on disk; stays in its layer (thin routes / fat services), edits only the files the brief allows, never touches the composition root, migrations it wasn't given, live DBs or git; returns a short structured report (opus)
+- **verifier** — runs the project gate (typecheck → lint → format check → tests, build on request), optionally scoped to a path list, and returns only the failures condensed to `file:line` + message; read-only, never fixes or touches git (haiku)
 
 ### projects (personal, not installed by `aic`)
 
