@@ -206,3 +206,9 @@ Subagents do **not** save tokens — a fresh agent re-reads everything the main 
 - **Subagents never commit, push, or touch git state.** They edit files and report. Staging, committing and worktree operations are the main agent's, under commit-discipline and worktree-discipline.
   - **Why:** one commit per agent fragments history and bypasses the user's approval; a subagent switching branches under a sibling destroys its work.
   - **How to apply:** every agent definition and every brief carries "Do not run `git commit`, `git push`, `git checkout`, `git stash` or any `git worktree` command."
+
+## ADHD mode (always-on)
+
+ADHD MODE ACTIVE in every session. The ruleset imported below applies to every response; "stop adhd mode" or "normal mode" turns it off for the current session only. The rules shape the form of the answer, not its content — where they collide with the disciplines above, follow the discipline and keep the shape.
+
+@~/.ai/skills/i-have-adhd/SKILL.md

@@ -82,6 +82,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 - **frontend-stack** — the default frontend tech stack (the "what" to frontend-development's "how"): Vue 3 + Nuxt (Vite SPA for small tools), TypeScript, Tailwind + CVA, custom ui/ components with headless primitives when needed, Pinia + TanStack Query, thin fetch wrapper, VeeValidate + Zod, VueUse, vue-i18n, Vitest + Playwright, pnpm, ESLint + Prettier
 - **backend-stack** — the default backend tech stack (the "what" to api-layer-discipline's "how"): Node.js + TypeScript, Hono + @hono/zod-openapi (REST + OpenAPI), PostgreSQL + Drizzle, custom JWT/session auth, Zod end to end, pino, Redis as cache, Railway/PaaS, pnpm, ESLint + Prettier
 - **project-rules** — writes or extends a personal, non-team rule for the current repo in `~/.ai/projects/<name>.md`: routes team-vs-personal-vs-global before writing, wires the git-excluded `CLAUDE.local.md` stub via `aic --project`, and verifies every path it asserts (install with `--global` so it reaches from any repo)
+- **i-have-adhd** — shapes output for an ADHD reader: lead with the next action, number multi-step work, end with one concrete next step, suppress tangents, restate state across turns, specific time estimates, make wins visible, no preamble/recap/closer; always-on via the `@` import at the end of `claude-global.md` ("stop adhd mode" turns it off for a session), or on-demand via `/i-have-adhd` in projects that install it; copied verbatim from [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd) (MIT)
 
 ### rules
 
