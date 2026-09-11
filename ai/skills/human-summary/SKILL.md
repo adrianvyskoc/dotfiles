@@ -2,6 +2,7 @@
 name: human-summary
 description: Napíše sumár (bug, zmena, čo som dnes robil, odovzdávka kolegovi) tak, aby vyzeral, že to rýchlo naťukal človek — žiadne AI tells. Spusti IBA na explicitné vyvolanie cez /human-summary alebo priame požiadanie ("zhrň to ako kolegovi", "napíš to po ľudsky"). NIKDY sa neaktivuj automaticky ani na konci konverzácie.
 user_invocable: true
+argument-hint: [voliteľne: register 1|2|3, "po anglicky", "jedna veta", "s diakritikou"]
 ---
 
 # Human-summary
@@ -54,7 +55,7 @@ Toto je jadro skillu. Aj keby zvyšok sedel, jediný z týchto znakov prezradí 
 
 ## Knoby (keď používateľ chce iný register)
 
-Default je register 3. Ak používateľ povie inak, prepni:
+Default je register 3. Ak používateľ povie inak (v texte alebo ako argumenty za `/human-summary` — sú v `$ARGUMENTS`), prepni:
 
 | Register | Kedy | Ako vyzerá |
 |----------|------|-----------|
