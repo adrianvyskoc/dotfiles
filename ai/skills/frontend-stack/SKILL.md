@@ -1,12 +1,16 @@
 ---
 name: frontend-stack
-description: The default frontend tech stack — Vue 3 + Nuxt (Vite SPA for small tools), TypeScript, Tailwind CSS + CVA, custom ui/ components with headless primitives when needed, Pinia + TanStack Query, thin fetch wrapper, VeeValidate + Zod, VueUse, vue-i18n, Vitest + Playwright, pnpm, ESLint + Prettier. Use when scaffolding a frontend project, adding a frontend dependency, or choosing a library/tool for frontend work.
+description: The default frontend tech stack — Vue 3 + Nuxt (Vite SPA for small tools), TypeScript, Tailwind CSS + CVA, custom ui/ components with headless primitives when needed, Pinia + TanStack Query, thin fetch wrapper, VeeValidate + Zod, VueUse, vue-i18n, Vitest + Playwright, pnpm, ESLint + Prettier. Defaults for new projects and unfilled slots — an existing project's choices (Astro, plain CSS, React, …) win over them. Use when scaffolding a frontend project, adding a frontend dependency, or choosing a library/tool for frontend work.
 user_invocable: true
 ---
 
 # Frontend Stack
 
 This skill pins **what** to use. **How** to build with it (component layers, ui/ library discipline, design tokens, async states, naming, a11y) lives in the `frontend-development` skill — follow both, and never restate its rules here.
+
+## Existing projects come first
+
+Everything below is a default for **new** projects and for slots an existing project has not filled yet. Before applying any of it, read the project: `package.json`, the config files, one or two components. What is already there wins — an Astro site on scoped CSS stays on scoped CSS, a React app stays on React. Do not add Tailwind, Pinia, VeeValidate or any other default to a project that made a different choice; if a switch would be worth it, propose it as a separate migration, never inside a feature task.
 
 ## Defaults
 
