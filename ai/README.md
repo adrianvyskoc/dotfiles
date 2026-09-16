@@ -110,7 +110,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 ### projects (personal, not installed by `aic`)
 
 - **ebox-app** — efabrica/ebox-app: never hand-edit the `pnpm sync:ai`-generated `CLAUDE.md`/`.claude/skills`/`.claude/agents`, which paths stay private, GitLab MRs instead of GitHub PRs, `<TICKET-n>/<slug>` branch names suggested on every implemented feature, nested `.claude/worktrees/`; ships a private `/review-task` command (`projects/ebox-app/commands/`) that reviews the branch against its Jira zadanie by composing the team `review-branch` skill
-- **eclario** — eclario/eclario-harness: issues labelled `app` are written in Slovak (title + body), as short as possible without dropping implementation detail, and carry a copy-pasteable `## Kontext pre agenta` block that an agent starting cold in `eclario-app` can run on; issue #80 is the reference
+- **eclario** — eclario/eclario-harness: issues labelled `app` are written in Slovak (title + body), as short as possible without dropping implementation detail, and carry a copy-pasteable `## Kontext pre agenta` block that an agent starting cold in `eclario-app` can run on; issue #80 is the reference; issues dispatched "z porady" get a dated `meeting-YYYY-MM-DD` label plus a first-line origin note, retro-applied when said after the fact
 
 ## Using `aic`
 

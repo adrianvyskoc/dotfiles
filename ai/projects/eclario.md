@@ -64,7 +64,20 @@ Every path, line number, field name and error string goes into the issue only af
 - **Why:** a stale path in the context block sends the agent to the wrong file with full confidence. That is worse than omitting it, because it reads as verified.
 - **How to apply:** if something cannot be verified, say so in the issue in one line ("`lastSeenAt` — ešte neexistuje — #79") instead of writing it as fact.
 
-### Where this rule is loaded
+### Issues "z porady" get a dated `meeting-YYYY-MM-DD` label and a note on the first line
+
+When I say the work comes from a team meeting — "zapísať z porady", "z dnešnej porady", "to je task z porady" or anything to that effect — every issue created for it on `eclario/eclario-harness` carries the label `meeting-<date>` (ISO date, e.g. `meeting-2026-09-16`) **on top of** its repo labels, and its body starts with this line, before the lead paragraph:
+
+```
+> 📋 **Task from the team meeting on 2026-09-16.**
+```
+
+On Slovak `app` issues (rule above) the line is Slovak: `> 📋 **Úloha z porady 16.09.2026.**`
+
+- **Why:** meeting outcomes have to be pullable as one batch afterwards (`gh issue list -R eclario/eclario-harness -l meeting-2026-09-16`), and the first-line note shows the origin to whoever opens the issue without them checking labels. Set on 2026-09-16, when #234 and #235 were filed this way.
+- **How to apply:** the date is **today** unless I name another day ("z pondelkovej porady" → that Monday; ask when it is ambiguous). Do not ask for the date when I say "dnešnej" or nothing at all. One label per meeting, never a generic `meeting` label. Create it if it does not exist yet — `gh label list -R eclario/eclario-harness --search meeting-<date>`, then `gh label create meeting-<date> -R eclario/eclario-harness --color 5319E7 --description "Tasks from the team meeting on <date>"` (colour `5319E7` is the one all meeting labels share). If I say it **after** issues were already created in the conversation, apply it retroactively to every issue created in that conversation: `gh issue edit <n> -R eclario/eclario-harness --add-label meeting-<date>` and prepend the note to the body (`gh issue view <n> --json body -q .body` → prepend → `gh issue edit <n> --body-file`), then confirm the list of issue numbers touched.
+
+### Where these rules are loaded
 
 `aic --project` derives the name from the repo directory, so the harness root resolves to `eclario` and loads this file. The sub-repos are separate gits and resolve to their own names — inside one, wire it to this same file explicitly:
 
