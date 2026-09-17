@@ -15,10 +15,11 @@ Optionally: a list of files or a scope ("only `src/features/inbox/`", "only the 
 
 ## Process
 
-1. **Discover the gate.** Read `package.json` scripts (or the equivalent: `Makefile`, `composer.json`, `pyproject.toml`). Look for `typecheck`, `lint`, `format:check` / `format`, `test`, `build`. Check the repo's `CLAUDE.md` for a documented gate order and use that if present. Default order: **typecheck → lint → format check → tests → build**. Skip `build` unless asked; it is slow and rarely adds signal over typecheck.
+1. **Discover the gate.** Read `package.json` scripts (or the equivalent: `Makefile`, `composer.json`, `pyproject.toml`, `CMakeLists.txt`). Look for `typecheck`, `lint`, `format:check` / `format`, `test`, `build`. Check the repo's `CLAUDE.md` for a documented gate order and use that if present. Default order: **typecheck → lint → format check → tests → build**. Skip `build` unless asked; it is slow and rarely adds signal over typecheck.
+   - **CMake / C++ projects** have no typecheck or lint step; the compile *is* the gate (`-Werror` makes warnings failures). For each host-buildable directory the `CLAUDE.md` names (e.g. `core`, `sim`): `cmake -S <dir> -B build/<dir> && cmake --build build/<dir>`, then `ctest --test-dir build/<dir> --output-on-failure` where tests exist. If a sanitizer build directory exists (`build/<dir>-san`) or the `CLAUDE.md` mentions ASan/UBSan, run that configuration too (`-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all"`) and report it as its own step. **Never run `idf.py`** or any other cross-compile/flash tool — a firmware build is a bench step; report it as `— (not run)`.
 2. **Scope when asked.** If a file list or scope was given, pass it to the tools that accept one (`eslint <files>`, `prettier --check <files>`, `vitest run <path>`). Typecheck usually cannot be scoped; run it whole and filter the output to the requested paths, but still report the total count of errors outside scope.
 3. **Run each step non-interactively.** Use flags that prevent watch mode or prompts: `vitest run`, `CI=true`, `--no-watch`, `--reporter=dot` or similar. Cap each step at a sensible timeout. If a step hangs, kill it and report it as `timeout`.
-4. **Condense.** For every failure, extract `file:line` and the one-line message. Group identical messages. Drop stack traces, ANSI codes, progress bars, passing-test lines and summaries. Keep the first assertion diff line for a failing test, nothing more.
+4. **Condense.** For every failure, extract `file:line` and the one-line message. Group identical messages. Drop stack traces, ANSI codes, progress bars, passing-test lines and summaries. Keep the first assertion diff line for a failing test, nothing more. Compiler output condenses the same way: `file:line:col: error: message` → `file:line — message`; keep the first error per file, drop the `note:` and `in instantiation of` cascade. A sanitizer report condenses to its first `SUMMARY:` line plus the top user-code frame.
 5. **Report** in the format below and stop.
 
 ## Rules
@@ -38,6 +39,7 @@ Use this exact structure and nothing after it.
 ## Gate: green | red
 **Scope:** <whole project | list of paths>
 **Steps:** typecheck ✅ | lint ❌ (4) | format ✅ | tests ❌ (2 failed / 118 passed) | build — (skipped)
+<!-- CMake project: **Steps:** build core ✅ | tests ✅ (13/13) | core-san ❌ (1) | build sim ✅ | idf.py build — (not run) -->
 
 ### typecheck
 <omit section when ✅>
