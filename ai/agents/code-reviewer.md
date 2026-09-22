@@ -2,7 +2,7 @@
 name: code-reviewer
 description: Reviews a diff or PR against project rules and conventions. Use when the user asks for a code review, a pre-PR check, or a second opinion on pending changes. Runs read-only — never edits, commits, or pushes.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Code Reviewer
