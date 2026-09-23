@@ -12,7 +12,7 @@ Target modern runtimes (Node 20+, evergreen browsers, current TypeScript). Reach
 
 1. **ESM only, named exports.** `import`/`export`, no CommonJS. Prefer named exports; reserve default exports for a module's single primary factory/component. Barrel files (`index.ts` re-exporting) for public surfaces.
 2. **`const` by default, `let` only when reassigned, never `var`.** Most code should be `const`. `let` is a signal that something mutates — make it deliberate.
-3. **Arrow functions; keep them small and pure.** Pure where possible; when there's a side effect, name it for what it does (`sweepExpiredAccounts`, not `process`).
+3. **Always arrow functions — never the `function` keyword.** Module helpers, exported functions, callbacks and Vue/React handlers are all `const name = (…): T => …`, even when the file around them mixes styles. Keep them small and pure; when there's a side effect, name it for what it does (`sweepExpiredAccounts`, not `process`). The only exceptions are the cases an arrow cannot express: generators (`function*`), TypeScript overload signatures, and code that genuinely needs its own `this` (class methods stay methods). Arrows are not hoisted — declare a helper above its first *call* (a later declaration is fine inside a function body that runs after module load).
 4. **`async/await`, never `.then()` chains** in business logic. Raw promise chaining is for trivial glue only.
 5. **Model fallible work as typed results or typed errors** — a discriminated-union `Result` or a custom `Error` subclass. Never return `null` to mean "it failed" or `throw` a string.
 6. **Immutable by default.** Don't mutate inputs. Use `readonly`, `as const`, the new copying array methods (`toSorted`, `with`), and `Object.freeze` for config.
@@ -359,6 +359,7 @@ const bytes = Uint8Array.fromBase64('aGk=');  // base64/hex <-> Uint8Array
 | `_privateField` convention                       | `#privateField`                                     |
 | `try`/`finally` to close a resource              | `using` / `await using` (where supported)           |
 | `a ? b : c ? d : e` (nested ternary)             | `if`/`else if` or `switch` (one-level ternary is OK) |
+| `function helper(x) { … }`                       | `const helper = (x: X): Y => { … }`                 |
 | `require()` / `module.exports`                   | `import` / `export` (ESM)                           |
 
 ---
