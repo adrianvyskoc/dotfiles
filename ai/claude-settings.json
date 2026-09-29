@@ -1,6 +1,24 @@
 {
-  "agentPushNotifEnabled": true,
-  "effortLevel": "xhigh",
+  "permissions": {
+    "allow": [
+      "Bash(git *)"
+    ]
+  },
+  "model": "opus",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/adrianvyskoc/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "claude-code-setup@claude-plugins-official": true,
     "claude-mem@thedotmack": true,
@@ -15,40 +33,27 @@
   "extraKnownMarketplaces": {
     "claude-code-warp": {
       "source": {
-        "repo": "warpdotdev/claude-code-warp",
-        "source": "github"
+        "source": "github",
+        "repo": "warpdotdev/claude-code-warp"
       }
     },
     "thedotmack": {
       "source": {
-        "repo": "thedotmack/claude-mem",
-        "source": "github"
+        "source": "github",
+        "repo": "thedotmack/claude-mem"
       }
     }
   },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "bash '/Users/adrianvyskoc/.claude/hooks/herdr-agent-state.sh' session",
-            "timeout": 10,
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
-      }
-    ]
+  "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    }
   },
-  "inputNeededNotifEnabled": true,
-  "model": "claude-fable-5[1m]",
-  "permissions": {
-    "allow": [
-      "Bash(git *)"
-    ]
-  },
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
-  "tui": "fullscreen"
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true
 }
