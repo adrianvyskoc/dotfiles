@@ -220,6 +220,15 @@ Enforced primarily in the generic library — fix it once there, every feature i
 - `alt` on images; `aria-*` only where semantics can't do the job.
 - Responsive behavior is part of done — a component/view that breaks on small screens (or, on native, other device sizes/orientations/safe areas) isn't finished.
 
+### Interactive zones
+
+The area that *looks* clickable, the element that *owns the handler*, and the element that *shows hover / cursor / focus* must be the same box — padding included.
+
+- Put the padding on the element with the handler, not on a wrapper around it. A card with `padding` on the root and `@click` on an inner header leaves a dead ring around the header where the cursor says "pointer" but nothing happens.
+- Bind hover and cursor to that same element (or to its parent via `:has(<that element>:hover)` when the visual lives on the parent). Never to a deeper slot child — its box is smaller than the handler's.
+- If the container holds interactive content (links, inputs, buttons), the toggle handler goes on the header strip, never on the whole container — otherwise clicking a link toggles the container.
+- Before finishing, hover and click the edges: padding, gap between header and content, the icon. All three must react identically.
+
 ---
 
 ## Common Mistakes to Avoid
@@ -236,4 +245,6 @@ Enforced primarily in the generic library — fix it once there, every feature i
 | Validation `if`s scattered in the template | One schema per form; type + messages derived from it |
 | View renders blank while loading | Explicit loading / error / empty branches |
 | `div` with `onClick` acting as a button | Semantic `button` with keyboard + focus for free |
+| Padding on the card, click handler on the inner header | Padding on the header; hover / cursor on the same element |
+| Toggle handler on a container that holds links | Toggle on the header strip only |
 | 300-line feature component "because it works" | Promote logic into hooks/composables/services |
