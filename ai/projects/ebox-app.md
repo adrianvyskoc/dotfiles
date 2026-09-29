@@ -33,6 +33,13 @@ These are **my** rules. The team's rules live in the repo's `.ai/rules/` and are
 
 `/review-task [jira-url-or-key]` reviews the current branch against its Jira zadanie (fetches the ticket, runs the team `review-branch` checklist, reports requirement coverage). It is defined in the dotfiles at `~/.ai/projects/ebox-app/commands/review-task.md` and symlinked into `.claude/commands/` by `aic --project` — if it's missing in a fresh worktree or machine, rerun `aic --project` there. Never move it into `.ai/skills/` (that commits it to the team repo) or `.claude/skills/` (pruned by sync:ai).
 
+### Private /start-task command
+
+`/start-task <jira-url-or-key> [--here]` is how a task begins: it fetches the ticket **and its comments** through the Atlassian Rovo MCP, provisions a worktree from `origin/master` (branch `<KEY>/<slug>`), inspects the affected code, and returns a short zhrnutie + proposal + questions to confirm — it never implements. Defined at `~/.ai/projects/ebox-app/commands/start-task.md`, symlinked into `.claude/commands/` by `aic --project`, same lifecycle and same "never move it into `.ai/skills/` or `.claude/skills/`" caveat as `/review-task` above.
+
+- **Why:** every task session opened the same way by hand — paste the Jira link, "sprav worktree", "pozri si zadanie a hlavne komentáre", "navrhni riešenie" — and the hand-typed version kept skipping one of those (usually the comments, or the `pnpm install` that generates `CLAUDE.md` in a fresh worktree).
+- **How to apply:** when I paste a Jira link with "ideme pracovať na tomto" / "pozri si zadanie" and no other instruction, behave as if `/start-task <link>` was invoked. `--here` (or "na aktuálnej branchi") means no new worktree.
+
 ### GitLab, not GitHub
 
 The remote is self-hosted GitLab (`git.efabrica.sk`).
@@ -53,6 +60,13 @@ Branches are `<TICKET-KEY>/<kebab-slug>` — the ticket number first, then a sho
 
 - **Why:** the ticket key in the branch name is load-bearing downstream — the `CHANGELOG.md` entry and the MR title both take their Jira key from it.
 - **How to apply:** every time a feature gets implemented (or new work starts), proactively suggest a branch name in this format, unprompted. Ask for the ticket number if I have not given one — do not invent a branch name without a ticket prefix.
+
+### Commit messages are `[<KEY>] <summary>` — no Conventional Commits type
+
+One line: the Jira key in square brackets, a space, then a short lowercase imperative summary. `[EPIK-16939] fix registration focus order and keyboard access to password reveal`. Several keys stack: `[EPIK-16859][EPIK-16853] …`. No `feat:`/`fix:` prefix, no scope, no body.
+
+- **Why:** this is the repo's convention (the team rule says only "start with the Jira ticket number"; the bracketed form is what the log actually uses) and it is what the `analyze-mr` tooling and release notes parse. A handful of `fix(scope): …` commits slipped in from my global habit — do not add more.
+- **How to apply:** this **overrides the message format** of the global `commit-discipline` rule for this repo; everything else in that rule (ask before every commit, show the draft, one line only) still holds. Take the key from the branch name. A commit with no ticket (tooling, cleanup) is a bare imperative summary, no brackets.
 
 ### Every finished change updates CHANGELOG.md
 
@@ -105,7 +119,11 @@ Anything that needs a value I genuinely cannot derive — Env, URL, User — goe
 
 ### Worktrees
 
-This repo uses nested worktrees under `.claude/worktrees/<name>/`, which are covered by the global `~/.claude` git exclude rules. A sibling `../ebox-app-worktrees/` directory also exists.
+This repo uses nested worktrees under `.claude/worktrees/`, covered by the global `~/.claude` git exclude rules. Create them with the `EnterWorktree` tool (`name: "<KEY>/<slug>"`), which also moves the session into the worktree; the base is `origin/master` by default. A sibling `../ebox-app-worktrees/` directory also exists but is not the preferred location.
 
-- **Why:** nested worktrees still find the root `CLAUDE.local.md` through the upward file walk, so no per-worktree stub is needed. Sibling worktrees do **not** — they need their own one-line stub.
-- **How to apply:** prefer `.claude/worktrees/<branch>/` here. This overrides the generic sibling-path convention from the `worktree-discipline` rule.
+- **Why:** nested worktrees still find the root `CLAUDE.local.md` through the upward file walk, so no per-worktree stub is needed. Sibling worktrees do **not** — they need their own one-line stub. And a plain `cd` into a worktree does not persist across tool calls, while `EnterWorktree` does.
+- **How to apply:** prefer `.claude/worktrees/` here. This overrides the sibling-path convention from the `worktree-discipline` rule. Three gotchas learned the hard way:
+  - **A fresh worktree has no `CLAUDE.md`** — it is gitignored and generated. Run `pnpm install --frozen-lockfile` right after creating the worktree: `prepare` runs `sync:ai` (team rules, skills, agents) and `nuxt prepare` (types for typecheck). Until then the worktree runs with **no team rules**.
+  - **Keep the directory name flat.** When creating manually, use `.claude/worktrees/<KEY>-<slug>` for branch `<KEY>/<slug>` — a nested `<KEY>/<slug>` directory leaves an empty `<KEY>/` folder behind after `git worktree remove`. `EnterWorktree` flattens the name itself.
+  - **Dev server in a worktree needs `.env.local`, `localhost.pem`, `localhost-key.pem`** copied from the main tree, and its own port when the main tree's server is running (`NUXT_PUBLIC_DEV_SERVER_URL=https://localhost:<port>` appended to the worktree's `.env.local`).
+  - Run `git branch --unset-upstream` in a new worktree so a bare `git push` cannot target master.
