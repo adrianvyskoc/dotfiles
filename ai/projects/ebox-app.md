@@ -40,6 +40,20 @@ These are **my** rules. The team's rules live in the repo's `.ai/rules/` and are
 - **Why:** every task session opened the same way by hand — paste the Jira link, "sprav worktree", "pozri si zadanie a hlavne komentáre", "navrhni riešenie" — and the hand-typed version kept skipping one of those (usually the comments, or the `pnpm install` that generates `CLAUDE.md` in a fresh worktree).
 - **How to apply:** when I paste a Jira link with "ideme pracovať na tomto" / "pozri si zadanie" and no other instruction, behave as if `/start-task <link>` was invoked. `--here` (or "na aktuálnej branchi") means no new worktree.
 
+### Private /ebox-help command
+
+`/ebox-help [filter | name]` prints what this session can do — the three private commands, the team skills (marked `[manual]` / `[auto]`), global commands and skills, agents, MCP servers and the section titles of this file — generated live from disk via inline `!` shell, so it cannot go stale. `/ebox-help review` filters, `/ebox-help sync` explains one command with examples. Read-only. Same location and lifecycle as the other private commands.
+
+- **Why:** the inventory is spread over five places (`.claude/commands/`, `.ai/skills/`, `~/.claude/`, `.ai/mcp.json`, this file) and I kept asking "čo všetko mám dostupné?".
+- **How to apply:** when I ask what commands, skills or tools exist here, run `/ebox-help` instead of listing from memory.
+
+### Private /sync command
+
+`/sync [master|R15]` is the "rebasni s aktuálnym mastrom" routine: rebase the current branch onto the latest base, resolve only the two mechanical conflicts (`vitest.config.ts` include list, `CHANGELOG.md` Unreleased entries — keep both sides), `pnpm install` when the lockfile moved, run `pnpm lint && pnpm format && pnpm typecheck`, then **ask** before `git push --force-with-lease --no-verify`. Same file location and lifecycle as the other two private commands.
+
+- **Why:** the rebase was requested by hand in 17 sessions and the follow-up was forgotten every other time — a stale `node_modules` after a `@efabrica/player` bump fails typecheck with misleading errors, and once the branch got rebased onto master when its MR targeted `R15`.
+- **How to apply:** "rebase with latest master", "rebasni s mastrom", "updatni branch" → `/sync`. When the base is not obvious (branch cut from `R15`, MR targets `R15`), ask which base; never guess `master`.
+
 ### GitLab, not GitHub
 
 The remote is self-hosted GitLab (`git.efabrica.sk`).
