@@ -47,7 +47,8 @@ Attachments and inline images do not come through the MCP. If the ticket says "v
 - Then, inside the worktree, in one command:
   1. `git branch --unset-upstream 2>/dev/null` — so a bare `git push` can never land on master.
   2. `pnpm install --frozen-lockfile` — required, not optional: `prepare` runs `sync:ai`, which generates the gitignored `CLAUDE.md`, `.claude/skills/` and `.claude/agents/`. Without it the fresh worktree has **no team rules loaded**. It also runs `nuxt prepare`, which typecheck needs.
-  3. `cp <main-root>/.env.local <main-root>/localhost.pem <main-root>/localhost-key.pem .` — so a dev server can start later. Do **not** start it now; when asked, use a port the main tree is not using (append `NUXT_PUBLIC_DEV_SERVER_URL=https://localhost:<port>` to the worktree's `.env.local`).
+  3. `cp <main-root>/.env.local <main-root>/localhost.pem <main-root>/localhost-key.pem . && cp -R <main-root>/.openapi .` — so a dev server can start later and the API Spec MCP / `validations.spec.ts` find the schema (`.openapi/` is gitignored, a fresh worktree has none). Do **not** start the dev server now; when asked, use a port the main tree is not using (append `NUXT_PUBLIC_DEV_SERVER_URL=https://localhost:<port>` to the worktree's `.env.local`).
+  4. `code .` — open the worktree in VS Code.
 
 Report one line: `Worktree: <path> · branch <KEY>/<slug> · z origin/master`.
 
