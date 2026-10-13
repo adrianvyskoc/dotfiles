@@ -19,3 +19,7 @@ description: Before opening a PR, adversarially self-review your own diff for du
 - **Never rubber-stamp, never silently edit.** If you find nothing of substance, say so plainly and name the two or three things you checked and why they're fine. The review proposes — it does not edit, commit, or push.
   - **Why:** an approval with no scrutiny is worse than no review; and a review that quietly rewrites the code takes the decision away from the author.
   - **How to apply:** output findings + reviewer guide and stop. Let the author decide what to change.
+
+- **Frontend changes get a design review too.** When the diff touches UI — components, views, styles, tokens — spawn the `design-reviewer` agent alongside your own pass (and alongside `code-reviewer` when that runs), passing the running page URL from the task/MR description so it can attach annotated screenshots.
+  - **Why:** a code-focused pass judges logic and structure; tokens, interactive states, responsive breakage and design mismatches slip through it. The reviewer only gets used if something triggers it.
+  - **How to apply:** one `design-reviewer` run per FE change set before the PR. No URL in the description → still run it; it reviews the code and notes that shots were skipped.

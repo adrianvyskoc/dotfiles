@@ -29,6 +29,10 @@ From whatever was obtained, extract: functional requirements, acceptance criteri
 
 Read `.ai/skills/review-branch/SKILL.md` at the repo root (fallback: `.claude/skills/review-branch/SKILL.md`) and perform the full review it describes on the current branch vs its base. That skill owns the technical checklist — do not restate, trim, or replace it here.
 
+## 3b. Design review — frontend diffs only
+
+If the diff touches UI (components, views, styles), spawn the `design-reviewer` agent on the same branch. Pass it the page URL from the task/MR description (and the Figma links from step 2, if any) so it can attach annotated screenshots to `.review-shots/`. No URL → run it anyway; it skips the shots and says so. Backend-only diff → skip this step in one line.
+
 ## 4. Validate against the zadanie
 
 Compare the branch diff (`git diff <base>...HEAD`) with the extracted requirements:
@@ -57,6 +61,10 @@ The full review-branch output, in that skill's own format.
 | --- | --- | --- |
 
 Then: **Scope creep**, **Unhandled edge cases**, **Manual checks** (numbered `Krok → Expected`).
+
+### Design review
+
+The design-reviewer output in its own format, with the `.review-shots/` paths it produced. Omit for backend-only diffs.
 
 ### Verdict
 

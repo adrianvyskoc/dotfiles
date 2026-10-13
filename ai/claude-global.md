@@ -42,6 +42,10 @@ description: Never commit or push without explicit approval; propose one-line Co
   - **Why:** prevents the slow drift where one approval quietly becomes a blanket permission.
   - **How to apply:** ask again for the next commit, even if they feel related.
 
+- **Never commit review artifacts — `.review-shots/` above all.** Annotated screenshots and their spec JSONs from design reviews live in `.review-shots/` and never go into a commit, a stage, or a push — not even when the user approved a commit of everything else. The folder is in the global git ignore; if it ever shows up in `git status`, stop and tell the user instead of adding it.
+  - **Why:** review screenshots are throwaway evidence for one review, often several MB each; committed, they bloat the repo history forever and leak unreleased UI.
+  - **How to apply:** before any `git add`, check the paths; never use `git add -A` / `git add .` when `.review-shots/` exists without confirming it is ignored.
+
 - **Use Conventional Commits format when proposing messages — subject line only.**
   - Subject: `type(scope): short imperative summary` — ~50 chars, lowercase, no trailing period
   - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `build`, `ci`

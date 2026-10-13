@@ -96,6 +96,9 @@ A few lines so the human can review efficiently:
 - **Focus areas:** the 2–3 files or decisions that carry the real risk.
 - **How to verify:** the gate command, and the one real-world check that proves it
   works (e.g. "do X in the UI, expect Y") — static review rarely proves behaviour.
+- **Frontend change?** Hand the visual side to the `design-reviewer` agent with the
+  page URL from the task/MR description — it attaches annotated screenshots
+  (`.review-shots/`, never committed) for findings visible on screen.
 - **Open questions / things to sign off on knowingly.**
 
 ## Output shape
