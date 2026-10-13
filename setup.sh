@@ -32,6 +32,22 @@ mkdir -p "$HOME/.claude"
 link_file "$DOTFILES_DIR/ai/claude-global.md"     "$HOME/.claude/CLAUDE.md"
 link_file "$DOTFILES_DIR/ai/claude-settings.json" "$HOME/.claude/settings.json"
 
+# Global git ignore: entries every repo must ignore. Appended, not linked, so
+# machine-specific entries already in the file survive. .review-shots/ holds
+# design-review screenshots (annotated-screenshots skill) and is never committed.
+GIT_IGNORE="$(git config --global core.excludesfile || true)"
+GIT_IGNORE="${GIT_IGNORE:-$HOME/.config/git/ignore}"
+GIT_IGNORE="${GIT_IGNORE/#\~/$HOME}"
+mkdir -p "$(dirname "$GIT_IGNORE")"
+for entry in ".review-shots/"; do
+  if ! grep -Fxq "$entry" "$GIT_IGNORE" 2>/dev/null; then
+    echo "$entry" >> "$GIT_IGNORE"
+    echo "Added $entry to $GIT_IGNORE"
+  else
+    echo "$entry already in $GIT_IGNORE"
+  fi
+done
+
 if ! grep -Fq "$SOURCE_LINE" "$HOME/.zshrc" 2>/dev/null; then
   {
     echo ""
