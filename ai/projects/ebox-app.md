@@ -112,16 +112,16 @@ A change is not done until the root `CHANGELOG.md` has an entry for it. Add it u
 
 The MR template is committed at `.gitlab/merge_request_templates/default.md`. **Read that file** and fill it — do not reproduce it from memory here, it can change.
 
-**Write the MR description in Slovak. Always.** Title, Popis, every test case step and expected result. This holds even when the whole session ran in English, even when the code, ticket and Figma notes are in English, and even when I write to you in English — the MR is read by Slovak-speaking reviewers, so the language of the MR does not follow the language of the conversation. Do not ask which language to use; do not produce an English draft "to be translated later".
+**Write the MR description in Slovak. Always.** Popis, every test case step and expected result. The one exception is the **MR title, which is always English** (see the table below). This holds even when the whole session ran in English, even when the code, ticket and Figma notes are in English, and even when I write to you in English — the MR is read by Slovak-speaking reviewers, so the language of the MR does not follow the language of the conversation. Do not ask which language to use; do not produce an English draft "to be translated later".
 
-Note the split: **MR description is Slovak, `CHANGELOG.md` is English.** Same task, two languages.
+Note the split: **MR description is Slovak; MR title and `CHANGELOG.md` are English.** Same task, two languages.
 
 - **Why:** the template exists because reviewers were getting MRs with no reproducible test steps. An empty test case section, or "viď Jira", gets the MR sent straight back.
 - **How to apply:** once the code is finished and the `CHANGELOG.md` entry is in, hand me the filled description as one copy-pasteable markdown block, unprompted.
 
 | Field | What to do |
 | --- | --- |
-| MR **title** | `[EPIK-<n>] <krátky popis po slovensky>` — the Jira key must be in the *title*, not only the body. Take it from the branch name. |
+| MR **title** | `[EPIK-<n>] <short summary in English>` — **English, never Slovak**, even though the body is Slovak. The Jira key must be in the *title*, not only the body. Take it from the branch name. |
 | **Env** | ask — unless the diff makes it unambiguous (RO-only code → `RO PROD`) |
 | **URL** | ask |
 | **User** | ask |
