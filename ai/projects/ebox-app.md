@@ -54,6 +54,13 @@ These are **my** rules. The team's rules live in the repo's `.ai/rules/` and are
 - **Why:** the rebase was requested by hand in 17 sessions and the follow-up was forgotten every other time — a stale `node_modules` after a `@efabrica/player` bump fails typecheck with misleading errors, and once the branch got rebased onto master when its MR targeted `R15`.
 - **How to apply:** "rebase with latest master", "rebasni s mastrom", "updatni branch" → `/sync`. When the base is not obvious (branch cut from `R15`, MR targets `R15`), ask which base; never guess `master`.
 
+### Private /ebox-env command
+
+`/ebox-env <staging|preprod> [n] [cz|sk|si|ro] [v1.xx]` points the current tree's `.env.local` at another backend: rewrites only the 8 active backend URL lines (`web/http/ws/ebox/falcon<n>.cms[-<cc>].jyxo-<stag|preprod>.<cz|net>`, version in the three `/api/<ver>` URLs). Omitted tokens keep the current value. Prod is refused. Same location and lifecycle as the other private commands.
+
+- **Why:** switching instance by hand meant editing 8 lines and getting one of them wrong — the number, `cms` vs `cms-si`, `.cz` vs `.net`, or the version left old in one of the three API URLs.
+- **How to apply:** "nastav env na staging 1", "prepni na SI preprod", "daj tam v1.13" → `/ebox-env`. When a ticket names an environment (`[SI stage:1]`, `/api/v1.14/…`), use it.
+
 ### GitLab, not GitHub
 
 The remote is self-hosted GitLab (`git.efabrica.sk`).
