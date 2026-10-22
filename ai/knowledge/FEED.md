@@ -2,6 +2,14 @@
 
 Čo sa kedy pridalo do [znalostnej bázy](README.md). Najnovšie hore. Jeden príspevok na beh, aj keď sa nič nezmenilo.
 
+## 2026-10-22 (týždenný beh)
+
+Pribudli tri poznámky: vynucovanie konvencií hookmi namiesto textu v CLAUDE.md, review ako vrstvy kontrol podľa rizika a písanie popisov MCP nástrojov pre tool search.
+
+- Pridané: [Hooky vynucujú konvencie](notes/hooky-vynucuju-konvencie.md)
+- Pridané: [Code review ako vrstvy kontrol podľa rizika](notes/code-review-vrstvy-podla-rizika.md)
+- Pridané: [Tool search: popisy MCP nástrojov](notes/tool-search-a-popisy-mcp-nastrojov.md)
+
 ## 2026-10-22 (presun z Notionu)
 
 Tri poznámky presunuté z Notion databázy do repa. Dve ďalšie (ceny/model-independence, rozpočty agentov) neprešli filtrom relevancie a presunuté neboli.

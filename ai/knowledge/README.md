@@ -43,11 +43,20 @@ Sekcia Príklad je voliteľná. Ostatné sú povinné.
 
 ### Guardrails & bezpečnosť
 
+- [Hooky vynucujú konvencie, inštrukcie len usmerňujú](notes/hooky-vynucuju-konvencie.md) — pravidlá pre agenta vynucuj hookom, nie textom · pridané 2026-10-22 · aktualizované 2026-10-22 · Zmiešané
 - [Guardrails agenta mimo jeho write scope](notes/guardrails-mimo-write-scope.md) — kontroly nesmú ležať tam, kam agent smie zapisovať · pridané 2026-10-22 · aktualizované 2026-10-22 · Zmiešané
 
 ### MCP
 
 - [Bezstavový MCP server (spec 2026-07-28)](notes/mcp-bezstavovy-server.md) — čo mení bezstavový protokol a ako migrovať · pridané 2026-10-22 · aktualizované 2026-10-22 · Primárny zdroj
 - [Návrh MCP nástrojov pre per-tool schvaľovanie](notes/mcp-nastroje-per-tool-schvalovanie.md) — read/write oddelene a úzke nástroje · pridané 2026-10-22 · aktualizované 2026-10-22 · Zmiešané
+
+### Agenti & workflow
+
+- [Code review ako vrstvy kontrol podľa rizika](notes/code-review-vrstvy-podla-rizika.md) — ľudský review škáluj podľa rizika zmeny · pridané 2026-10-22 · aktualizované 2026-10-22 · Primárny zdroj
+
+### Kontext & nástroje
+
+- [Tool search: popisy MCP nástrojov a server instructions](notes/tool-search-a-popisy-mcp-nastrojov.md) — dôležité na začiatok popisu, aby ich model našiel · pridané 2026-10-22 · aktualizované 2026-10-22 · Primárny zdroj
 
 Formát riadku: `- [Názov](notes/slug.md) — jedna veta · pridané YYYY-MM-DD · aktualizované YYYY-MM-DD · overenie`, zoskupené pod nadpisom kategórie.
