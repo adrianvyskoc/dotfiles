@@ -13,6 +13,7 @@ Claude Code assets extracted from past projects and made generic enough to drop 
 | `projects/`        | **Personal** per-project instructions (not for the team)  | imported by `<project>/CLAUDE.local.md` |
 | `claude-global.md` | Claude Code user-level memory                             | symlinked to `~/.claude/CLAUDE.md` by `setup.sh` |
 | `claude-settings.json` | Claude Code user settings (model, effort, plugins, theme) | symlinked to `~/.claude/settings.json` by `setup.sh` |
+| `knowledge/`       | AI-dev learning notes + dated feed, filled weekly by a scheduled task (see [`knowledge/README.md`](knowledge/README.md)) | not installed by `aic`; read in place via `~/.ai/knowledge/` |
 
 Each asset has frontmatter with a `description:` field so `aic` can list them.
 
