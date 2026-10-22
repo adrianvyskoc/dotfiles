@@ -41,6 +41,13 @@ Sekcia Príklad je voliteľná. Ostatné sú povinné.
 
 ## Index
 
-_Zatiaľ žiadne poznámky. Prvý beh tasku: pondelok 2026-10-26._
+### Guardrails & bezpečnosť
+
+- [Guardrails agenta mimo jeho write scope](notes/guardrails-mimo-write-scope.md) — kontroly nesmú ležať tam, kam agent smie zapisovať · pridané 2026-10-22 · aktualizované 2026-10-22 · Zmiešané
+
+### MCP
+
+- [Bezstavový MCP server (spec 2026-07-28)](notes/mcp-bezstavovy-server.md) — čo mení bezstavový protokol a ako migrovať · pridané 2026-10-22 · aktualizované 2026-10-22 · Primárny zdroj
+- [Návrh MCP nástrojov pre per-tool schvaľovanie](notes/mcp-nastroje-per-tool-schvalovanie.md) — read/write oddelene a úzke nástroje · pridané 2026-10-22 · aktualizované 2026-10-22 · Zmiešané
 
 Formát riadku: `- [Názov](notes/slug.md) — jedna veta · pridané YYYY-MM-DD · aktualizované YYYY-MM-DD · overenie`, zoskupené pod nadpisom kategórie.
