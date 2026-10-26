@@ -140,7 +140,8 @@ async function main() {
   }
 
   const { chromium } = loadPlaywright()
-  const browser = await chromium.launch()
+  // ANNOTATE_CHROMIUM: path to an installed Chromium when the pinned Playwright wants a build that is not downloaded.
+  const browser = await chromium.launch(process.env.ANNOTATE_CHROMIUM ? { executablePath: process.env.ANNOTATE_CHROMIUM } : {})
   try {
     const context = await browser.newContext({
       viewport: spec.viewport || { width: 1440, height: 900 },

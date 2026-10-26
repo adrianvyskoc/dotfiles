@@ -1,6 +1,6 @@
 ---
 name: annotated-screenshots
-description: Produce review screenshots with a red arrow, outline and numbered badge pointing at the exact element that is off — the way colleagues mark design mismatches in code review. Works on a live page (CSS selector → pixel-exact box from the DOM) or on an existing image such as a Figma export (explicit box). Use during a design/UI review, when verifying a frontend change against a design, or when the user asks to "show where it's wrong", "mark it on a screenshot", "pridaj šípku".
+description: Produce review screenshots with a red arrow, outline and numbered badge pointing at the exact element that is off — the way colleagues mark design mismatches in code review. Works on a live page (CSS selector → pixel-exact box from the DOM) or on an existing image such as a Figma export (explicit box). Use during a design/UI review, when verifying a frontend change against a design, or when the user asks to "show where it's wrong", "mark it on a screenshot", "pridaj šípku" — and for the annotated before/after pairs every visible PR/MR change ships with (rule pr-screenshots).
 user_invocable: true
 ---
 
@@ -13,7 +13,7 @@ The script draws from the **DOM**, not from eyeballed pixel coordinates — a se
 ## Prerequisites
 
 - **A running page URL.** The user usually gives it in the task / MR description (`localhost:3000/...`, a review app, staging). Look there first. No URL → skip screenshots and say so in one line; do not start a dev server on your own.
-- **Playwright.** The script uses the project's own `playwright` if installed, otherwise the pinned copy in `~/.cache/annotate-shots`. If neither exists, it prints the one-time install command — show it to the user, don't install silently.
+- **Playwright.** The script uses the project's own `playwright` if installed, otherwise the pinned copy in `~/.cache/annotate-shots`. If neither exists, it prints the one-time install command — show it to the user, don't install silently. If it fails with "Executable doesn't exist at …chromium_headless_shell-NNNN…" but another build is downloaded (`ls ~/Library/Caches/ms-playwright/`), point it there: `ANNOTATE_CHROMIUM=<path to chrome-headless-shell> node …/annotate.mjs spec.json`.
 
 ## Output location — NEVER commit
 
@@ -48,6 +48,15 @@ The script draws from the **DOM**, not from eyeballed pixel coordinates — a se
 
 4. **Look at the PNG** (Read it) before citing it. If the arrow covers the problem or points at the wrong element, change `from` or the selector and rerun.
 5. Cite it in the finding: `**Card.vue:42** — gap above trial card 8 px, design 16 px. [shot: .review-shots/01-trial-card-spacing.png #1]`.
+
+## Before / after pairs for a PR / MR
+
+Every visible change ships annotated pairs (rule `pr-screenshots`). Same marks on both images:
+
+1. Shoot both states yourself with Playwright at the same viewport (≥ 1280 px for desktop UI) — "po" on the branch, "pred" on a detached `origin/<base>` (HMR, same dev server, same data). In the same run, read each changed element's `getBoundingClientRect()` and save the boxes per state (`pred-boxes.json`, `po-boxes.json`) — the element can move between states.
+2. Write one spec per image in `image` mode with `"crop": "full"`, `marks[].box` from that state's boxes, same `label` on both images for the same change. For an element screenshot, make the boxes relative to the element.
+3. Run, Read every PNG, fix `from` where an arrow covers the change.
+4. Upload to the forge, then per screen: `### <screen>`, legend `1 <old → new> · 2 …`, **Pred** / **Po**.
 
 ## Spec reference
 
