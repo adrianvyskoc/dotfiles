@@ -67,6 +67,7 @@ Use `~/.ai/projects/…`, **not** `~/.claude/projects/…` — the latter is Cla
 - **git-state** — audits every repo (siblings + submodules) under a path for branch/dirtiness/open PRs; with `--reset`, stashes + returns each to its default branch
 - **worktree** — spins up / tears down git worktrees at a predictable sibling path (`../<repo>-worktrees/<branch>`); lists them, and removes them only after a dirty/unpushed safety check (automates the worktree-discipline rule)
 - **autopilot** — runs the task without stopping to ask decision questions: decides autonomously, logs every decision, and reports them all at the end; commit/push and destructive-action limits still apply
+- **cleanup** — one small cleanup batch (max 5 findings): deterministic tools (tsc, lint, knip) find candidates, a separate agent tries to disprove each claim, then one subagent per confirmed finding fixes it in its own worktree and makes one local commit after a green gate; risky items (public API, migrations, permanent flags) go to a human; never pushes (explicit exception in commit-discipline)
 
 ### skills
 
