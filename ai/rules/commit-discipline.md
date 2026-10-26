@@ -1,5 +1,5 @@
 ---
-description: Never commit or push without explicit approval; propose one-line Conventional Commits messages with no body
+description: Never commit or push without explicit approval; propose Conventional Commits messages with fixed scopes, `!` for breaking changes, and no body unless a short why is needed
 ---
 
 ## Commit discipline
@@ -16,7 +16,7 @@ description: Never commit or push without explicit approval; propose one-line Co
   - **Why:** prevents the slow drift where one approval quietly becomes a blanket permission.
   - **How to apply:** ask again for the next commit, even if they feel related.
 
-- **Exception — `/cleanup` batches.** Running `/cleanup` is explicit approval for subagents to create **local** commits on `cleanup/*` branches inside their own worktrees, one per finding, after a green gate. Everything else in this rule still applies: no push, no commit on `main` or the user's current branch, one-line Conventional Commit subject.
+- **Exception — `/cleanup` batches.** Running `/cleanup` is explicit approval for subagents to create **local** commits on `cleanup/*` branches inside their own worktrees, one per finding, after a green gate. Everything else in this rule still applies: no push, no commit on `main` or the user's current branch, one-line Conventional Commit subject with no body.
   - **Why:** a cleanup finding is small, reversible by deleting its branch, and reviewing 5 dirty worktrees by hand costs more than reviewing 5 commits. The risk lives in push and merge, which stay gated.
   - **How to apply:** the exception is granted by the command, per batch. It never carries over to ordinary work in the same session.
 
@@ -24,7 +24,7 @@ description: Never commit or push without explicit approval; propose one-line Co
   - **Why:** review screenshots are throwaway evidence for one review, often several MB each; committed, they bloat the repo history forever and leak unreleased UI.
   - **How to apply:** before any `git add`, check the paths; never use `git add -A` / `git add .` when `.review-shots/` exists without confirming it is ignored.
 
-- **Use Conventional Commits format when proposing messages — subject line only.**
+- **Use Conventional Commits format when proposing messages.**
   - Subject: `type(scope): short imperative summary` — ~50 chars, lowercase, no trailing period
   - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `build`, `ci`
   - Scope is optional but helpful when the repo has clear areas (e.g. `feat(aliases): …`)
@@ -35,9 +35,16 @@ description: Never commit or push without explicit approval; propose one-line Co
     chore(deps): drop oh-my-zsh in favor of plain zsh config
     ```
 
-- **No commit body. Ever.** One line, concise and to the point — nothing after the subject.
-  - **Why:** the diff already shows what changed, and bodies drift into restating it. A repo of one-line subjects stays scannable in `git log --oneline`; prose belongs in the PR description, not the commit.
-  - **How to apply:** if the summary does not fit in one line, the commit is doing too much — split it. Never pad a weak subject with an explanatory paragraph. Machine trailers (`Co-Authored-By:`, `Refs:`) are footers, not a body, and are fine.
+- **Scopes come from a fixed list — in this dotfiles repo:** `skills`, `rules`, `agents`, `commands`, `knowledge`, `setup`, `aliases`, `aic`, or a project name for `ai/projects/<name>` (`ebox-app`, `eclario`). Never `ai`. The specific skill/agent/rule goes in the subject, not the scope: `feat(agents): attach annotated shots in design-reviewer`, not `feat(design-reviewer): …`.
+  - **Why:** almost everything lives under `ai/`, so `feat(ai)` says nothing; and mixing category scopes with file-name scopes means `git log --grep 'feat(skills)'` misses half the skill commits.
+  - **How to apply:** pick the scope from the folder the change touches. If a change spans two scopes, split it or drop the scope. In other repos, reuse the scopes their history already uses; do not invent new ones without asking.
+
+- **Mark breaking changes with `!`.** `feat(aliases)!: rename hlp to help`. Breaking means an existing setup stops working after pull: a renamed or removed alias, skill, command or agent, a moved file that `setup.sh` / `aic` symlinks, a changed config path.
+  - **Why:** these are the only commits that require action on other machines (rerun `setup.sh` / `aic --project`); the `!` makes them findable before pulling.
+
+- **No commit body by default — a short *why* is the only exception.** One line is the norm. A body of 1–3 lines is allowed only when the reason for the change is not recoverable from the diff, the ticket or the PR — typically a `fix` with a non-obvious cause, or a `refactor`/`revert` done for a reason the code does not show.
+  - **Why:** the diff shows *what* changed but never *why*, and `git blame` leads to the commit, not to the PR or ticket — those can disappear with a tracker or host migration. Bodies that restate the diff are still banned.
+  - **How to apply:** the body answers "why" only — no list of changed files, no recap of the subject. If you feel the need to explain *what* the commit does in more than one line, the commit is doing too much — split it. Machine trailers (`Co-Authored-By:`, `Refs:`) are footers, not a body, and are fine. Per-project rules may forbid bodies entirely (`ebox-app` does) — they win.
 
 - **Show the drafted message before committing.** Once the user says yes, paste the message you're about to use and give them a chance to tweak it before it lands.
   - **Why:** cheaper to edit a draft than to amend a commit.

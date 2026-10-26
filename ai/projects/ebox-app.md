@@ -87,7 +87,7 @@ Branches are `<TICKET-KEY>/<kebab-slug>` — the ticket number first, then a sho
 One line: the Jira key in square brackets, a space, then a short lowercase imperative summary. `[EPIK-16939] fix registration focus order and keyboard access to password reveal`. Several keys stack: `[EPIK-16859][EPIK-16853] …`. No `feat:`/`fix:` prefix, no scope, no body.
 
 - **Why:** this is the repo's convention (the team rule says only "start with the Jira ticket number"; the bracketed form is what the log actually uses) and it is what the `analyze-mr` tooling and release notes parse. A handful of `fix(scope): …` commits slipped in from my global habit — do not add more.
-- **How to apply:** this **overrides the message format** of the global `commit-discipline` rule for this repo; everything else in that rule (ask before every commit, show the draft, one line only) still holds. Take the key from the branch name. A commit with no ticket (tooling, cleanup) is a bare imperative summary, no brackets.
+- **How to apply:** this **overrides the message format** of the global `commit-discipline` rule for this repo; everything else in that rule (ask before every commit, show the draft) still holds. **Never a commit body here — not even the short *why* the global rule allows.** The why goes into the MR description and the Jira ticket. Take the key from the branch name. A commit with no ticket (tooling, cleanup) is a bare imperative summary, no brackets.
 
 ### Every finished change updates CHANGELOG.md
 
