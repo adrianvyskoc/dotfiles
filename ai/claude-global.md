@@ -150,13 +150,13 @@ description: Delegate to subagents only past a clear threshold, brief them with 
 
 Subagents do **not** save tokens — a fresh agent re-reads everything the main agent already knows, and its context is not in the prompt cache. What they buy is a clean main context on long tasks and parallel wall-clock time. Delegate for those two reasons only.
 
-- **Delegate only past the threshold.** Stay single-agent unless at least one holds: (a) the task has **3+ independent parts** that can run in parallel without touching the same files, (b) doing the work inline would flood the main context with **bulk input** (library docs, test logs, large files, sweeping searches), or (c) the work is **adversarial by nature** (review, critique, second opinion) and benefits from not sharing the author's context.
+- **Delegate only past the threshold.** Stay single-agent unless at least one holds: (a) the task passes **all four split criteria** in triage-discipline (≥3 disjoint units, contract expressible as code, units need only the contract, each non-trivial), (b) doing the work inline would flood the main context with **bulk input** (library docs, test logs, large files, sweeping searches), or (c) the work is **adversarial by nature** (review, critique, second opinion) and benefits from not sharing the author's context.
   - **Why:** every delegation costs a brief, a re-read of the codebase, a verify pass and an integration step. Below the threshold that overhead exceeds the win and quality drops because the subagent lacks the conversation.
   - **How to apply:** when a plan is done, sort its steps into "parallel", "sequential", "bulk input". If nothing lands in the first or third bucket, do it yourself. Say which bucket triggered the delegation.
 
-- **Contracts before parallel work.** Anything two agents both depend on — types, props, API shape, file names, exports — is written to disk by the main agent (or a contract step) *before* the parallel agents start. Parallel agents implement against the contract; they never invent it.
+- **Contracts before parallel work.** Anything two agents both depend on — types, props, API shape, file names, exports — is written to disk by `contract-architect` (or the main agent) and **approved by the human** *before* the parallel agents start. Parallel agents implement against the contract; they never invent it.
   - **Why:** three agents writing atoms without a shared interface hand the integrator three incompatible components. Fixing that costs more than the parallelism saved.
-  - **How to apply:** the plan's `## Types` section is the contract. Land it in the repo first, then brief each agent with the exact file path to build against.
+  - **How to apply:** the plan's `## Contract` section lists the paths (triage-discipline). Land it, typecheck it, get the human's yes, then brief each agent with the exact file path to build against.
 
 - **Parallel agents never touch shared files.** Barrel exports (`index.ts`), route tables, i18n files, `package.json`, lockfiles, migrations and any file two briefs would both name are off-limits to parallel agents. The integrator (or the main agent) edits them once, after the parallel phase.
   - **Why:** two agents writing the same file in one working tree silently overwrite each other. This is the most common way parallel work loses code.
@@ -203,7 +203,7 @@ Subagents do **not** save tokens — a fresh agent re-reads everything the main 
 
 - **Verify after every phase; never trust "done".** After a parallel phase or a single delegated step, run the project's gate (typecheck → lint → tests). Hand this to a cheap verifier agent that returns only failures, not logs.
   - **Why:** a subagent that reports success without running the gate is the norm, not the exception. Catching a broken atom before the integrator starts is cheap; after, it is a cascade.
-  - **How to apply:** gate → fix → gate, at most **two** rounds per phase. If the second round still fails, stop and surface it to the user instead of spawning a third fixer.
+  - **How to apply:** gate → fix → gate, at most **two** rounds per phase. If the second round still fails, stop and surface it to the user instead of spawning a third fixer. Reviewers run only after the gate is green — deterministic checks first, LLM review after.
 
 - **Pin the model per role; override only with a stated reason.** The default lives in each agent's frontmatter. The main agent may pass `model` to override, but must say why in one line ("spec is fully mechanical, downgrading to sonnet").
   - **Why:** an orchestrator left to choose systematically underestimates difficulty and picks the cheap model. A wrong cheap model means a redo, which costs more than the right model once.
@@ -214,15 +214,76 @@ Subagents do **not** save tokens — a fresh agent re-reads everything the main 
     | orchestrator, planner, contract design, plan critique | fable / opus |
     | implementer, integrator, debugger | opus (sonnet when the brief is fully mechanical) |
     | test writer, code review, security review | sonnet |
-    | explore, verifier, docs research, PR description | haiku |
+    | spec analysis (spec-analyst) | sonnet |
+    | explore, codebase-scout, verifier, docs research, PR description | haiku |
 
 - **Review findings go back through the main agent.** A reviewer reports; it does not fix. The main agent decides which findings to act on and briefs a fixer (or a fork of the implementer) with the exact finding list.
   - **Why:** letting reviewers edit collapses the adversarial split that made the review worth spawning. Letting fixers loop unsupervised produces churn.
-  - **How to apply:** implement → review → fix → re-review, capped at one fix round. Unresolved findings go to the user as open questions.
+  - **How to apply:** implement → gate → review → fix → re-review. Only `BLOCKER` findings start another round; at most **two** fix rounds, and each re-review gets the previous findings so it checks those plus the fix diff only. Unresolved findings go to the user as open questions.
 
-- **Subagents never commit, push, or touch git state.** They edit files and report. Staging, committing and worktree operations are the main agent's, under commit-discipline and worktree-discipline.
+- **Subagents never commit, push, or touch git state** — except in `/cleanup` batches, where a worker may `git add` its own files and make one local commit on its `cleanup/*` branch in its own worktree (see commit-discipline). Otherwise they edit files and report. Staging, committing and worktree operations are the main agent's, under commit-discipline and worktree-discipline.
   - **Why:** one commit per agent fragments history and bypasses the user's approval; a subagent switching branches under a sibling destroys its work.
   - **How to apply:** every agent definition and every brief carries "Do not run `git commit`, `git push`, `git checkout`, `git stash` or any `git worktree` command."
+
+---
+description: Triage every multi-part task before code — scout + spec-analyst in parallel, a plan with an explicit split decision against fixed criteria, a human-approved contract before any parallel work, deterministic gates before LLM review, at most two blocking-only review rounds, and a retro log row per task
+---
+
+## Triage discipline
+
+Triage is the orchestrator's job, not a subagent's. Subagents feed it compressed input; the orchestrator alone decides split/no-split, approves the contract (with the human) and owns the definition of done. Default is **one agent**; splitting must be justified in writing.
+
+- **Run the triage flow before any implementation.** `codebase-scout` and `spec-analyst` in parallel (one message, two agents) → the plan → the split decision. Skip `spec-analyst` when there is no spec or design to read; never skip the scout.
+  - **Why:** parallel implementers each building their own field/validation wrapper is a triage failure — nobody looked for what already exists or what several parts will share.
+  - **How to apply:** the scout's `Reuse` and `Shared candidates` and the analyst's `Repeated components` and `Ambiguities` go into the plan verbatim. Any `Ambiguities` item goes to the human **before** code; do not resolve it yourself.
+
+- **Split only if ALL four criteria hold.** (1) ≥3 work units touching disjoint files, (2) the contract between them can be written as code before implementation, (3) each unit needs only the contract, not another unit's implementation, (4) each unit is non-trivial. **Never split** bugfixes, cross-codebase refactors, discovery-heavy tasks or small tasks.
+  - **Why:** every split costs a contract, a brief per unit, an integration step and a consistency risk. Below these criteria that overhead buys nothing and parallel parts drift apart.
+  - **How to apply:** one failed criterion → single agent. Bulk-input and adversarial delegation (orchestration-discipline (b)/(c)) are not splits and stay allowed.
+
+- **Write the plan to `tasks/<slug>.md` with the triage sections.** Planning-discipline still applies (Goal, File changes, Totals, Open questions for unknowns). Add these headings literally:
+  - **Why:** a written split decision with per-criterion results is what makes the retro log tunable — "we split" without "because" teaches nothing.
+  - **How to apply:**
+
+    ```markdown
+    ## Work units
+    - <unit> — files: <paths> — reuses: <scout entries>
+
+    ## Shared
+    <components, state, types, schemas ≥2 units need — existing (path) or to create (→ contract)>
+
+    ## Split decision: single | split
+    - ≥3 units, disjoint files: ✅/❌ <why>
+    - contract expressible as code: ✅/❌ <why>
+    - units need only the contract: ✅/❌ <why>
+    - each unit non-trivial: ✅/❌ <why>
+
+    ## Contract
+    <split only: exact paths contract-architect may write>
+
+    ## Definition of done
+    <runnable commands, e.g. `pnpm typecheck`, `pnpm lint`, `pnpm vitest run src/features/x`>
+    ```
+
+- **Split → contract-architect → human approval → implementation.** The orchestrator briefs `contract-architect` with the plan path; it writes only the `## Contract` paths, gets typecheck green and stops. Show the human the contract diff and wait for an explicit yes before spawning implementers.
+  - **Why:** a wrong contract multiplies across every parallel unit; one human look at a short diff is the cheapest checkpoint in the whole flow.
+  - **How to apply:** the approval is per task. A requested change goes back to `contract-architect` (or the orchestrator), then to the human again.
+
+- **Implementers stay in their files; contract changes are escalated.** Each brief's `May edit` is that unit's file list from the plan; `Conventions` lists the scout's `Reuse` entries for that unit. An implementer that needs a contract change returns `blocked` with the gap — it never edits the contract.
+  - **Why:** a unilateral contract edit silently breaks every sibling building against it.
+  - **How to apply:** on `blocked`, the orchestrator decides: amend the contract (contract-architect, then human approval again if the shape changed) or re-scope the unit. Never forward a contract edit to an implementer.
+
+- **Deterministic checks first, LLM review after.** Run the plan's definition-of-done commands (via `verifier`) until green, then spawn reviewers. Tell reviewers the gate is green so they don't re-run it.
+  - **Why:** a reviewer reading a tree that doesn't typecheck spends its budget on what a compiler finds for free.
+  - **How to apply:** gate → fix → gate, max two rounds (orchestration-discipline); only then review.
+
+- **Review loop: only BLOCKERs trigger another round; max 2 fix rounds.** Round = fix → gate → re-review. Re-reviews receive the previous findings and check only those plus the fix diff. `IMPORTANT`/`MINOR` may be fixed in the same pass at the orchestrator's discretion; they never start a round.
+  - **Why:** without an exit, every re-review surfaces fresh nits and the loop never ends.
+  - **How to apply:** BLOCKERs still open after round 2 go to the human as open questions — no third round.
+
+- **Append one row to the retro log after every triaged task.** File: `~/.ai/retro/triage-log.md`. Columns: date, project, task, split (yes/no + failed criteria), units, review rounds, manual fixes.
+  - **Why:** the split criteria are a guess until data says otherwise; the log is what tunes them.
+  - **How to apply:** at wrap-up, ask the human how many manual fixes they made or requested after "done" — your own count misses the ones they did outside the session. One row, no prose.
 
 ---
 description: Every visible change ships annotated before/after screenshots in its PR/MR — numbered arrows on exactly what changed, a legend under each pair
