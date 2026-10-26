@@ -16,6 +16,10 @@ description: Never commit or push without explicit approval; propose one-line Co
   - **Why:** prevents the slow drift where one approval quietly becomes a blanket permission.
   - **How to apply:** ask again for the next commit, even if they feel related.
 
+- **Exception — `/cleanup` batches.** Running `/cleanup` is explicit approval for subagents to create **local** commits on `cleanup/*` branches inside their own worktrees, one per finding, after a green gate. Everything else in this rule still applies: no push, no commit on `main` or the user's current branch, one-line Conventional Commit subject.
+  - **Why:** a cleanup finding is small, reversible by deleting its branch, and reviewing 5 dirty worktrees by hand costs more than reviewing 5 commits. The risk lives in push and merge, which stay gated.
+  - **How to apply:** the exception is granted by the command, per batch. It never carries over to ordinary work in the same session.
+
 - **Never commit review artifacts — `.review-shots/` above all.** Annotated screenshots and their spec JSONs from design reviews live in `.review-shots/` and never go into a commit, a stage, or a push — not even when the user approved a commit of everything else. The folder is in the global git ignore; if it ever shows up in `git status`, stop and tell the user instead of adding it.
   - **Why:** review screenshots are throwaway evidence for one review, often several MB each; committed, they bloat the repo history forever and leak unreleased UI.
   - **How to apply:** before any `git add`, check the paths; never use `git add -A` / `git add .` when `.review-shots/` exists without confirming it is ignored.

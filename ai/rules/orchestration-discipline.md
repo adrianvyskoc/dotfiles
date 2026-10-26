@@ -76,6 +76,6 @@ Subagents do **not** save tokens — a fresh agent re-reads everything the main 
   - **Why:** letting reviewers edit collapses the adversarial split that made the review worth spawning. Letting fixers loop unsupervised produces churn.
   - **How to apply:** implement → review → fix → re-review, capped at one fix round. Unresolved findings go to the user as open questions.
 
-- **Subagents never commit, push, or touch git state.** They edit files and report. Staging, committing and worktree operations are the main agent's, under commit-discipline and worktree-discipline.
+- **Subagents never commit, push, or touch git state** — except in `/cleanup` batches, where a worker may `git add` its own files and make one local commit on its `cleanup/*` branch in its own worktree (see commit-discipline). Otherwise they edit files and report. Staging, committing and worktree operations are the main agent's, under commit-discipline and worktree-discipline.
   - **Why:** one commit per agent fragments history and bypasses the user's approval; a subagent switching branches under a sibling destroys its work.
   - **How to apply:** every agent definition and every brief carries "Do not run `git commit`, `git push`, `git checkout`, `git stash` or any `git worktree` command."
