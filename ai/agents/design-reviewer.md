@@ -19,6 +19,7 @@ You review the **visual side** of a frontend change set: tokens, states, variant
 - A branch or commit range (e.g. `main..HEAD`, `origin/main...HEAD`).
 - A path or glob for components that just changed.
 - Nothing — in that case, review the current diff: `git diff` (unstaged) + `git diff --staged`.
+- **Previous findings** from an earlier round — this is a **re-review**: check only whether each listed finding is fixed and what the fix diff changed; list each one as `fixed` or `still open` under its original severity. Report a new finding only if it is a `BLOCKER`; everything else stays out of the report.
 
 If the scope is unclear, ask once, then proceed.
 
@@ -28,7 +29,7 @@ If the scope is unclear, ask once, then proceed.
 2. **Find the design system.** Locate the token source (`@theme` / `tailwind.config.*` / `tokens.css` / theme object) and the generic library (`ui/`, `components/ui/`, `components/base/`). Read the library's Button and Input: they define the house state matrix, axis names (`variant`/`size`/`tone`) and focus ring. Everything is judged against **these**, not against the examples in the skills.
 3. **Read the rules.** The `frontend-development` and `ui-styling` skills are preloaded when the project has them installed; if absent, read `.claude/skills/frontend-development/SKILL.md` and `.claude/skills/ui-styling/SKILL.md` if present. Also check `CLAUDE.md` for project-specific styling rules and quote them when relevant.
 4. **Judge each changed component** through the lens below. For every interactive element, walk the state matrix explicitly. For every raw value, check whether a token exists for it.
-5. **Run the cheap checks when possible.** `pnpm lint` (Tailwind/stylelint plugins catch arbitrary values) and `pnpm typecheck` if variants are typed. Grep the diff for `#[0-9a-f]{3,6}`, `\[\d+px\]`, `dark:`, `outline-none`, `!important`, `z-\[`, `transition-all`. Do not fix anything — report.
+5. **Run the cheap checks when possible.** `pnpm lint` (Tailwind/stylelint plugins catch arbitrary values) and `pnpm typecheck` if variants are typed. If the brief says the gate already ran green, cite that in the report instead of re-running it. Grep the diff for `#[0-9a-f]{3,6}`, `\[\d+px\]`, `dark:`, `outline-none`, `!important`, `z-\[`, `transition-all`. Do not fix anything — report.
 6. **Capture visual evidence when a URL exists.** Look for a running page URL in the brief, the PR/MR description (`gh pr view` / `glab mr view`) or the ticket. If there is one, follow the `annotated-screenshots` skill (read `~/.ai/skills/annotated-screenshots/SKILL.md` if it is not preloaded): one PNG per screen with an arrow and numbered badge on each Blocker/Important finding that is visible on screen, at the viewport where the bug shows. Read every PNG before citing it. No URL → skip this step and say so in the **Checks** line.
 7. **Write the report** in the format below.
 
