@@ -73,6 +73,8 @@ Every visible change ships annotated pairs (rule `pr-screenshots`). Same marks o
 | `marks[].box` | image mode: `{x, y, width, height}` in image pixels |
 | `marks[].from` | side the arrow comes from: `top-left` · `top-right` (default) · `bottom-left` · `bottom-right` — pick the side with empty space |
 | `marks[].label` | badge text, matches the finding number |
+| `marks[].note` | optional short text pill next to the badge saying what is wrong (`"Figma 32 px → kód 36 px"`); `\n` splits lines |
+| `marks[].length` | optional arrow length in px (default 90) — lengthen it to keep arrows and notes from crossing |
 
 Stdout is JSON: the output path and per-mark `ok` / `error`. A missing selector is reported, not fatal — fix it, don't ship a shot with a missing mark.
 
