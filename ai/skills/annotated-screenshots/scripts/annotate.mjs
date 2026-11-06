@@ -15,11 +15,14 @@
 //   "crop": "marks",                             // "marks" (default) | "viewport" | "full"
 //   "marks": [
 //     { "label": "1", "selector": ".trial-card", "from": "top-right" },
-//     { "label": "2", "box": { "x": 40, "y": 600, "width": 300, "height": 20 } }
+//     { "label": "2", "box": { "x": 40, "y": 600, "width": 300, "height": 20 } },
+//     { "label": "3", "selector": ".title", "note": "32 px → 36 px", "length": 140 }
 //   ]
 // }
 //
 // "from" is the side the arrow comes from: top-left | top-right | bottom-left | bottom-right (default top-right).
+// "note" (optional) is a short text pill next to the badge saying what is wrong; "\n" splits lines.
+// "length" (optional) is the arrow length in px (default 90) — lengthen it to keep arrows from crossing.
 // Prints a JSON summary to stdout; a missing selector is reported, not fatal.
 
 import { readFileSync, mkdirSync } from 'node:fs'
@@ -72,6 +75,8 @@ function drawOverlay(marks) {
     return node
   }
 
+  document.body.appendChild(svg)
+
   const results = []
   for (const mark of marks) {
     let box = mark.box
@@ -97,8 +102,9 @@ function drawOverlay(marks) {
     const dy = from.startsWith('top') ? -1 : 1
     const tipX = dx > 0 ? x + w : x
     const tipY = dy > 0 ? y + h : y
-    const tailX = Math.min(Math.max(tipX + dx * ARROW, 16), width - 16)
-    const tailY = Math.min(Math.max(tipY + dy * ARROW, 16), height - 16)
+    const length = mark.length || ARROW
+    const tailX = Math.min(Math.max(tipX + dx * length, 16), width - 16)
+    const tailY = Math.min(Math.max(tipY + dy * length, 16), height - 16)
     el('line', { x1: tailX, y1: tailY, x2: tipX, y2: tipY, stroke: '#fff', 'stroke-width': 8, 'stroke-linecap': 'round', opacity: 0.6 })
     el('line', { x1: tailX, y1: tailY, x2: tipX, y2: tipY, stroke: RED, 'stroke-width': 4, 'stroke-linecap': 'round', 'marker-end': 'url(#ah)' })
 
@@ -116,14 +122,44 @@ function drawOverlay(marks) {
       text.textContent = mark.label
     }
 
-    const minX = Math.min(x, tailX - 16)
-    const minY = Math.min(y, tailY - 16)
-    const maxX = Math.max(x + w, tailX + 16)
-    const maxY = Math.max(y + h, tailY + 16)
+    let minX = Math.min(x, tailX - 16)
+    let minY = Math.min(y, tailY - 16)
+    let maxX = Math.max(x + w, tailX + 16)
+    let maxY = Math.max(y + h, tailY + 16)
+
+    if (mark.note) {
+      const LINE = 20
+      const lines = String(mark.note).split('\n')
+      const bg = el('rect', { rx: 6, fill: RED, stroke: '#fff', 'stroke-width': 2 })
+      const text = el('text', { 'font-family': 'system-ui, sans-serif', 'font-size': 15, 'font-weight': 600, fill: '#fff' })
+      lines.forEach((line, i) => {
+        const tspan = document.createElementNS(ns, 'tspan')
+        tspan.setAttribute('x', 0)
+        tspan.setAttribute('dy', i === 0 ? 0 : LINE)
+        tspan.textContent = line
+        text.appendChild(tspan)
+      })
+      const textWidth = text.getBBox().width
+      const pillW = textWidth + 20
+      const pillH = lines.length * LINE + 10
+      let side = dx
+      if (side > 0 && tailX + 20 + pillW > width - 4) side = -1
+      else if (side < 0 && tailX - 20 - pillW < 4) side = 1
+      const pillX = Math.min(Math.max(side > 0 ? tailX + 20 : tailX - 20 - pillW, 4), width - 4 - pillW)
+      const pillY = Math.min(Math.max(tailY - pillH / 2, 4), height - 4 - pillH)
+      bg.setAttribute('x', pillX)
+      bg.setAttribute('y', pillY)
+      bg.setAttribute('width', pillW)
+      bg.setAttribute('height', pillH)
+      text.setAttribute('transform', `translate(${pillX + 10}, ${pillY + 5 + 15})`)
+      minX = Math.min(minX, pillX)
+      minY = Math.min(minY, pillY)
+      maxX = Math.max(maxX, pillX + pillW)
+      maxY = Math.max(maxY, pillY + pillH)
+    }
     results.push({ label: mark.label, ok: true, extent: { minX, minY, maxX, maxY } })
   }
 
-  document.body.appendChild(svg)
   return { results, width, height }
 }
 
