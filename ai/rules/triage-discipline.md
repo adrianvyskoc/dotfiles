@@ -56,4 +56,4 @@ Triage is the orchestrator's job, not a subagent's. Subagents feed it compressed
 
 - **Append one row to the retro log after every triaged task.** File: `~/.ai/retro/triage-log.md`. Columns: date, project, task, split (yes/no + failed criteria), units, review rounds, manual fixes.
   - **Why:** the split criteria are a guess until data says otherwise; the log is what tunes them.
-  - **How to apply:** at wrap-up, ask the human how many manual fixes they made or requested after "done" — your own count misses the ones they did outside the session. One row, no prose.
+  - **How to apply:** write the row silently at wrap-up — never ask the human anything for it. `Manual fixes` is your own count of the fixes they requested after you said "done" in this session. One row, no prose.
