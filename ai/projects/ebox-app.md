@@ -138,6 +138,16 @@ Test cases are the part worth effort:
 
 Anything that needs a value I genuinely cannot derive — Env, URL, User — goes into a short explicit list of questions **above** the block. Do not leave it as a silent empty field for me to discover later.
 
+### Every MR: assign me and squash on merge
+
+Every MR in this repo has me as the assignee (GitLab username `vyskoc`) and the "Squash commits when merge request is accepted." checkbox checked. No exceptions, and do not ask.
+
+- **Why:** I asked for both on every MR — the MR must sit on my assigned list, and the branch must land on the target as one commit.
+- **How to apply:**
+  - **New MR via `glab`:** `glab mr create --assignee vyskoc --squash-before-merge …`
+  - **Existing MR via `glab`:** `glab mr update <iid> --assignee +vyskoc`. Keep the `+`: without it the existing assignees are replaced. `--squash-before-merge` on `update` is a **toggle**, so first read the state with `glab mr view <iid> -F json` and pass the flag only when `squash` is `false`.
+  - **MR opened in the web UI:** when you hand me the description block, add one line reminding me to click "Assign to me" and check the squash box.
+
 ### Worktrees
 
 This repo uses nested worktrees under `.claude/worktrees/`, covered by the global `~/.claude` git exclude rules. Create them with the `EnterWorktree` tool (`name: "<KEY>/<slug>"`), which also moves the session into the worktree; the base is `origin/master` by default. A sibling `../ebox-app-worktrees/` directory also exists but is not the preferred location.
