@@ -1,10 +1,8 @@
 Do your work step by step. When u finish some important part, notify me for a review.
 
-At the end of each coding session (when wrapping up a task, or when I signal we're done), tell me which subagents you used and what each one was for — e.g. "Subagents used: code-reviewer (reviewed the branch), Explore (located the auth code)." If you didn't use any, say "No subagents used this session." This is a wrap-up habit you follow, not a harness hook, so it's on you to remember it.
-
 After every finished piece of work (each part handed over for review, and the final wrap-up), add a short **`Príklady použitia`** section: 2–4 concrete, simply written examples of what I can now do or what now happens — a command to run, a screen to open, a real-life scenario ("Ráno vojdeš do kúpeľne → svetlo sa zapne teplé a stlmené"). Shape it with the i-have-adhd rules: numbered, one example per line, concrete values instead of abstractions, no jargon unless it is the thing I type. Write it in the language we are talking in. Skip it only for pure Q&A with no change made.
 
-At the end of every finished piece of work, make the very last line of the response say whether I can close the session, in the language we are talking in. It comes after the subagent line and `Príklady použitia`.
+At the end of every finished piece of work, make the very last line of the response say whether I can close the session, in the language we are talking in. It comes after `Príklady použitia`.
 
 - Nothing is left for me to do — no question, no approval, no uncommitted or unpushed work, no failing check, no decision: `# ✅✅✅ HOTOVO — MÔŽEŠ ZAVRIEŤ SESSION ✅✅✅`
 - Anything at all still needs me: `# ⛔ NEZATVÁRAJ SESSION — <the one thing I need to do>`
