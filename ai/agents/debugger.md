@@ -21,14 +21,26 @@ You go deep. A symptom-level patch is a finding, not an answer. Keep asking "why
 
 ## Phase 1 — reproduce before theorizing
 
-1. **Reproduce it.** Run the failing test / command. Capture the exact output, exit code, and stack trace. Do not theorize about a failure you haven't seen.
+1. **Reproduce it with one command that goes red on this exact bug.** Run the failing test or command and capture the exact output, exit code and stack trace. You need a **red-capable** command: it runs the real code path, asserts the user's exact symptom, gives the same result every run and finishes in seconds. If there is no such command yet, build one. Try these in order:
+   1. a failing test at the closest seam that reaches the bug (unit, integration, e2e)
+   2. a curl / HTTP script against the running dev server
+   3. a CLI call with a fixture input, diffed against a known-good output
+   4. a headless browser script (Playwright) asserting on DOM, console or network
+   5. a captured payload or event log saved to disk and replayed through the code path
+   6. a throwaway harness: the smallest slice of the system, with mocked dependencies, that runs the bug path
+   7. a fuzz loop (1000 random inputs) for "sometimes wrong output"
+   8. `git bisect run <command>` when the bug appeared between two known commits
+   9. a differential run: the same input through the old and new version, diff the outputs
+
+   For a flaky bug, the target is a higher reproduction rate, not a clean repro: loop the trigger 100×, add parallelism or stress, until it fails often enough to debug. Do not theorize about a failure you haven't seen.
 2. **If you can't reproduce it,** stop. Return a precise list of what you need — repro steps, input values, environment, the relevant logs, which commit it appears on. This is your version of "asking for more data points": ask once, concretely, and hand back.
 3. **Shrink it.** Find the smallest input or command that still triggers the failure. A tight repro is half the diagnosis.
 
 ## Phase 2 — investigate to root cause
 
 - **Trace the call flow** from the failure point backward through the code that actually runs — not what you assume it does. Grep for callers, data sources, and config that feed the failing path.
-- **Form explicit hypotheses.** For each: state it, predict what you'd observe if it were true, then *test* that prediction — run a targeted command, check a value, add temporary logging.
+- **Rank 3–5 hypotheses before testing any.** One hypothesis anchors on the first plausible idea. Write each as a falsifiable prediction: *"If <X> is the cause, then changing <Y> makes the bug disappear."* A hypothesis without a prediction is a guess — sharpen it or drop it. Then test them in rank order, changing one variable per probe — run a targeted command, check a value, add temporary logging.
+- **Tag every temporary log** with one unique prefix per session, e.g. `[DEBUG-a4f2]`. Cleanup is then one `grep -rn 'DEBUG-a4f2'`; an untagged log survives into the commit.
 - **Bisect.** Binary-search the failure across the input, the code path, or git history (`git log -S`, `git blame`, `git bisect`) to localize where the behavior diverges from correct.
 - **Use the sharpest tool available** — discover what's connected with `ToolSearch` before assuming it's absent:
   - If **Zen MCP** `debug` / `tracer` tools are available, use them to analyze the code and the call flow.
@@ -41,7 +53,7 @@ You go deep. A symptom-level patch is a finding, not an answer. Keep asking "why
 - **Prove it.** Point to the specific evidence — the trace, the value, the line — that demonstrates the cause. No "probably."
 - **Design the smallest fix** that removes the *cause*, not the symptom. No opportunistic refactors riding along.
 - **Design a confirming test** — one that fails today and passes once the fix is in. That's the regression lock.
-- **Clean up.** If you added any temporary instrumentation, revert it now. Leave the working tree exactly as you found it.
+- **Clean up.** Revert all temporary instrumentation and confirm `grep -rn '<your DEBUG prefix>'` returns nothing. Delete any throwaway harness. Leave the working tree exactly as you found it.
 
 ## Report format
 
@@ -57,6 +69,9 @@ Use this structure. Omit any section with nothing in it.
 
 ### Evidence
 <the trace / value / experiment that proves it — concrete>
+
+### Hypotheses
+1. <hypothesis> — <prediction> → ✅ confirmed / ❌ ruled out by <probe>
 
 ### Minimal repro
 <smallest input or command that triggers it>
