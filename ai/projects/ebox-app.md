@@ -108,35 +108,40 @@ A change is not done until the root `CHANGELOG.md` has an entry for it. Add it u
 
   The existing file is inconsistent about that space (`[TICKET] [AZ]` roughly 94 entries, `[TICKET][AZ]` roughly 20). Write new entries with the space; leave old ones alone.
 
-### Fill in the MR description when a task is done
+### MR flow: draft first, description and test case after
 
-The MR template is committed at `.gitlab/merge_request_templates/default.md`. **Read that file** and fill it — do not reproduce it from memory here, it can change.
+Every task ends the same way in my sessions (10+ sessions, Oct–Nov 2026): push the branch, **open the MR as a draft with no description**, then — when I say so — write the description + test case, take it out of draft and paste it in.
 
-**Write the MR description in Slovak. Always.** Popis, every test case step and expected result. The one exception is the **MR title, which is always English** (see the table below). This holds even when the whole session ran in English, even when the code, ticket and Figma notes are in English, and even when I write to you in English — the MR is read by Slovak-speaking reviewers, so the language of the MR does not follow the language of the conversation. Do not ask which language to use; do not produce an English draft "to be translated later".
+1. **"sprav MR v drafte / bez popisu"** → `glab mr create --draft` with only the title (+ before/after screenshots when the change is visible, see `pr-screenshots`). Leave the template body empty. Do not write a description until I ask.
+2. **"sprav popis a test case" / "daj prec z draftu"** → write both (format below), put them **above** the screenshots in the description, mark the MR ready, make sure I am assignee + squash is on (next section).
+3. **"vloz do MR" / "daj to do MR"** after you showed me a draft → paste exactly what I saw, nothing re-worded.
 
-Note the split: **MR description is Slovak; MR title and `CHANGELOG.md` are English.** Same task, two languages.
+- **Why:** I review the draft text before it lands, and the description is the last thing I need — the MR must exist early so screenshots and the assignee are in place.
+- **How to apply:** do not volunteer a description at step 1, and do not hand back a long template at step 2. When I name a reviewer ("Smolen as reviewer"), set it; otherwise leave the Reviewer checkbox unchecked — it belongs to the reviewer.
 
-- **Why:** the template exists because reviewers were getting MRs with no reproducible test steps. An empty test case section, or "viď Jira", gets the MR sent straight back.
-- **How to apply:** once the code is finished and the `CHANGELOG.md` entry is in, hand me the filled description as one copy-pasteable markdown block, unprompted.
+### MR description and test case format
+
+The MR template is committed at `.gitlab/merge_request_templates/default.md`. **Read it** and keep its headings (`## Popis`, `## Test case (Mandatory)`) — do not reproduce it from memory, it can change.
+
+**Write both through `/human-summary` + `/i-have-adhd`, every time — I type that by hand on every MR.** That means:
+
+- **Popis: 1–2 short sentences.** One sentence is the default; two only when there is a second thing a reviewer would miss (e.g. an element removed on mobile). Say what changed and why, no recap of the diff.
+- **Test case: numbered, one step per line, 3–4 words each.** Ideally one step; fewer steps is fine, more than ~6 is too many. A step is a value to check, not a story: `1. mobil dlazdica 150×217`, `2. karusel neposkoci`. No `Krok → Expected` sentences.
+- **Language: Slovak, human-summary register** — lowercase, no diacritics, no markdown inside the sentences. I have said diacritics are not needed. **MR title stays English** `[EPIK-<n>] <short summary>`, `CHANGELOG.md` stays English.
+- **Still derive the steps from the actual diff** and cover only what cannot be read off the Jira ticket. Never `…` or "viď Jira".
+- Hand it back as one copy-pasteable markdown block, then wait for "vloz do MR".
+
+If I give an extra constraint in the same message ("test case nechaj na mna", "daj tam tabulku BG pre mobile/desktop", "skrat popis na jednu vetu") it beats these defaults for that MR.
 
 | Field | What to do |
 | --- | --- |
-| MR **title** | `[EPIK-<n>] <short summary in English>` — **English, never Slovak**, even though the body is Slovak. The Jira key must be in the *title*, not only the body. Take it from the branch name. |
-| **Env** | ask — unless the diff makes it unambiguous (RO-only code → `RO PROD`) |
-| **URL** | ask |
-| **User** | ask |
-| **Figma** | use the link if I gave one this session; otherwise delete the row, as the template says |
-| **Popis** | optional — write it only when the change is non-obvious or a refactor (then explain *why this approach*), skip it otherwise |
-| **Test case** | **write it from the actual diff** — this is the one section I really need |
-| **Reviewer** checkbox | leave unchecked; that box belongs to the reviewer |
+| MR **title** | `[EPIK-<n>] <short summary in English>` — Jira key from the branch name |
+| **Env / URL / User** | I usually say "nezalezi" — ask once only if the diff needs them (RO-only code → `RO PROD`); for UI work the URL is the Storybook story, the Figma link is the one used in the session; delete rows I did not give |
+| **Figma** | the link from this session, otherwise delete the row |
+| **Reviewer** checkbox | leave unchecked |
 
-Test cases are the part worth effort:
-
-- numbered, each one `Krok: … → Expected: …`, concrete enough that a reviewer can click through without reading the code
-- derive them from what actually changed, and cover **only what cannot be read off the Jira ticket** — do not restate the ticket
-- never emit `…` or "viď Jira" as a placeholder
-
-Anything that needs a value I genuinely cannot derive — Env, URL, User — goes into a short explicit list of questions **above** the block. Do not leave it as a silent empty field for me to discover later.
+- **Why:** the long `Krok → Expected` test cases and multi-sentence descriptions I got by default had to be asked for short by hand in every session since 2026-10-23 ("popis max 1-2 vety", "test case 3-4 slova", always with `/human-summary /i-have-adhd`).
+- **How to apply:** produce the short version first time; do not offer the long one as an alternative.
 
 ### Every MR: assign me and squash on merge
 
