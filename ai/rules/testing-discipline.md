@@ -14,7 +14,7 @@ description: Every feature ships tests for its most important behaviour (and eve
 
 - **When asked to write tests, match the project's existing style.** Detect the framework (Vitest, Jest, Bun test, Playwright, etc.), the file-location convention (`*.test.ts` next to source, `__tests__/`, `tests/`), and the assertion style already in use. Do not introduce a new framework or a new location.
   - **Why:** mixed test conventions in one repo create friction for every future contributor.
-  - **How to apply:** before writing, open one existing test file and copy its shape. If no tests exist yet, ask the user which framework and location to use.
+  - **How to apply:** before writing, open one existing test file and copy its shape. If the repo has no test setup, skip the tests (see above) — ask which framework and location to use only when the user explicitly asked for tests.
 
 - **Test behavior, not implementation.** A test should fail when the feature breaks for users, not when the internal structure is refactored. Prefer tests that exercise a public API, a route, or an observable effect. Avoid asserting on private helpers, intermediate state, or the exact shape of internal calls.
   - **Why:** brittle tests get skipped or deleted; behavior tests survive refactors.
