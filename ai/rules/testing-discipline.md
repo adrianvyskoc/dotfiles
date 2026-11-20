@@ -1,15 +1,15 @@
 ---
-description: Do not write tests unprompted. Propose coverage gaps, but always ask before implementing tests.
+description: Every feature ships tests for its most important behaviour (and every bugfix a reproducing test); anything beyond the core is proposed first, never written unasked.
 ---
 
 ## Testing discipline
 
-- **Do not write tests proactively.** If the task is "implement feature X", implement the feature and stop. Do not add a test file unless the user explicitly asked for tests, or the project has a test-first convention documented in CLAUDE.md.
-  - **Why:** unprompted tests inflate the diff, often test the wrong thing (implementation details instead of behavior), and can give false confidence that the feature is verified.
-  - **How to apply:** when finishing an implementation, report what was built and — if relevant — mention that tests were not added. Let the user ask for them.
+- **Every feature ships tests for its most important behaviour.** When implementing a feature or changing behaviour, write tests for what the feature exists to do: the main success path, plus the one or two failure cases that would hurt users most if they broke (input rejected, permission denied, limit enforced). Not full coverage. A bugfix ships a test that reproduces the bug and passes with the fix.
+  - **Why:** untested core behaviour regresses silently. A few targeted tests catch the breakages that matter without inflating the diff.
+  - **How to apply:** list the behaviours you will test in the plan; at wrap-up, report which ones are covered. Pure refactors, docs, styling and copy changes need no new tests, but existing tests must stay green. If the repo has no test setup, skip the tests there — do not introduce a framework.
 
-- **You may propose tests, but always ask before writing.** If you see a meaningful coverage gap (new untested branch, tricky edge case, bug-prone logic), point it out and suggest what to test in one or two sentences. Wait for a clear go-ahead before creating test files.
-  - **Why:** the user is the one who knows whether a test is worth the upkeep cost. A short proposal respects their judgement without forcing the decision.
+- **Beyond the core, propose — don't write.** For further coverage gaps (extra edge cases, rarely hit branches), suggest what to test in one or two sentences and wait for a clear go-ahead before writing those tests.
+  - **Why:** the user is the one who knows whether a test beyond the core is worth the upkeep cost. A short proposal respects their judgement without forcing the decision.
   - **How to apply:** phrase it as "Worth testing: X, Y, Z — want me to add them?" — not as a promise or a next step already in motion.
 
 - **When asked to write tests, match the project's existing style.** Detect the framework (Vitest, Jest, Bun test, Playwright, etc.), the file-location convention (`*.test.ts` next to source, `__tests__/`, `tests/`), and the assertion style already in use. Do not introduce a new framework or a new location.
