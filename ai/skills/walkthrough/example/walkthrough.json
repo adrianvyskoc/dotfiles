@@ -1,0 +1,266 @@
+{
+  "version": 1,
+  "title": "annotate.mjs: add note and arrow length to marks (example, commit 64ee8eb)",
+  "base": "64ee8eb~1",
+  "scope": ["ai/skills/annotated-screenshots/"],
+  "request": "add note and arrow length to annotate marks",
+  "requirements": [
+    { "id": "R1", "text": "A mark can carry an optional text note shown next to its badge", "quote": "add note" },
+    { "id": "R2", "text": "A mark can set its arrow length", "quote": "arrow length" }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "requirement": "R1",
+      "title": "Render the note as a red pill beside the badge, one tspan per line",
+      "chosen": "SVG rect + text drawn inside the existing overlay; '\\n' splits lines into tspans",
+      "why": "The overlay is already one SVG; the pill reuses the badge colours so a mark reads as one unit.",
+      "alternatives": [
+        { "option": "HTML div positioned over the page", "rejected_because": "second layer to measure and clip; the SVG overlay already has extents bookkeeping" }
+      ],
+      "provenance": { "kind": "codebase", "ref": "ai/skills/annotated-screenshots/scripts/annotate.mjs:112" },
+      "changes": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:130-144", "ai/skills/annotated-screenshots/scripts/annotate.mjs:150-154"]
+    },
+    {
+      "id": "D2",
+      "requirement": "R1",
+      "title": "Attach the SVG to the document before drawing, not after",
+      "chosen": "move document.body.appendChild(svg) above the mark loop",
+      "why": "text.getBBox() is needed to size the pill and only measures nodes that are in the DOM.",
+      "alternatives": [
+        { "option": "estimate text width from character count", "rejected_because": "wrong for proportional fonts and non-Latin text" }
+      ],
+      "provenance": { "kind": "assumption" },
+      "changes": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:78-79", "ai/skills/annotated-screenshots/scripts/annotate.mjs:162-163"]
+    },
+    {
+      "id": "D3",
+      "requirement": "R1",
+      "title": "Flip the pill to the other side and clamp it when it would leave the page",
+      "chosen": "flip when it overflows on the arrow side, then clamp x and y into the page",
+      "why": "Marks near an edge would otherwise produce a pill cut off in the screenshot.",
+      "alternatives": [],
+      "provenance": { "kind": "assumption" },
+      "changes": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:145-149"]
+    },
+    {
+      "id": "D4",
+      "requirement": "R1",
+      "title": "Grow the mark extent to include the pill",
+      "chosen": "minX/minY/maxX/maxY become let and are widened by the pill box",
+      "why": "The default crop is computed from mark extents, so a pill outside them would be cropped away.",
+      "alternatives": [],
+      "provenance": { "kind": "codebase", "ref": "ai/skills/annotated-screenshots/scripts/annotate.mjs:218" },
+      "changes": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:125-129", "ai/skills/annotated-screenshots/scripts/annotate.mjs:155-158"]
+    },
+    {
+      "id": "D5",
+      "requirement": "R2",
+      "title": "Optional per-mark length with the old constant as default",
+      "chosen": "const length = mark.length || ARROW",
+      "why": "Existing specs keep their exact output; only marks that set length change.",
+      "alternatives": [{ "option": "global spec-level arrowLength", "rejected_because": "the request is about marks, and crossing arrows are a per-mark problem" }],
+      "provenance": { "kind": "request", "ref": "arrow length" },
+      "changes": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:105-107"]
+    },
+    {
+      "id": "D6",
+      "requirement": "R1",
+      "title": "Document note in the spec header and the SKILL.md field table",
+      "chosen": "one example mark plus one line in each place",
+      "why": "Fields in this script are documented in the header comment and in the SKILL.md table; a field in only one of them goes unnoticed.",
+      "alternatives": [],
+      "provenance": { "kind": "codebase", "ref": "ai/skills/annotated-screenshots/SKILL.md:75" },
+      "noFlow": true,
+      "changes": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:18-19", "ai/skills/annotated-screenshots/scripts/annotate.mjs:24", "ai/skills/annotated-screenshots/SKILL.md:76"]
+    },
+    {
+      "id": "D7",
+      "requirement": "R2",
+      "title": "Document length in the spec header and the SKILL.md field table",
+      "chosen": "one line in each place, with the default value",
+      "why": "Same reason as D6; the default (90) is what a reader needs to choose a value.",
+      "alternatives": [],
+      "provenance": { "kind": "codebase", "ref": "ai/skills/annotated-screenshots/SKILL.md:75" },
+      "noFlow": true,
+      "changes": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:25", "ai/skills/annotated-screenshots/SKILL.md:77"]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S1",
+      "requirement": "R1",
+      "title": "A mark with a note gets a pill",
+      "trigger": "node annotate.mjs spec.json, spec has a mark with \"note\": \"32 px → 36 px\"",
+      "input": "spec.json with url, out and marks[0] = { selector, note }",
+      "result": "PNG where the badge has a red pill with the note next to it; the crop includes the pill; stdout JSON lists the mark as ok",
+      "tests": [],
+      "steps": [
+        {
+          "id": "S1.1",
+          "fn": "main",
+          "kind": "unchanged",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:166",
+          "does": "Reads the spec, launches Chromium, opens the page and runs drawOverlay in it with spec.marks.",
+          "in": "spec.json path (argv[2])",
+          "out": "PNG on disk + JSON summary on stdout",
+          "effects": "writes spec.out",
+          "edges": [
+            { "case": "no spec path given", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:168" },
+            { "case": "spec lacks out / marks / url", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:173" }
+          ]
+        },
+        {
+          "id": "S1.2",
+          "fn": "drawOverlay",
+          "kind": "modified",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:57",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:78-79"],
+          "does": "Builds the SVG overlay and now attaches it to the page before any mark is drawn.",
+          "in": "marks[] (from the spec)",
+          "out": "{ results, width, height } (returned at the end)",
+          "effects": "adds an <svg> to document.body",
+          "parent": "S1.1",
+          "when": "page loaded",
+          "edges": [{ "case": "getBBox() on a detached node would return 0 width", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:78" }]
+        },
+        {
+          "id": "S1.3",
+          "fn": "drawOverlay#marks",
+          "kind": "unchanged",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:81",
+          "does": "For each mark: resolves its box from selector or box, draws outline.",
+          "in": "one mark",
+          "out": "box {x, y, width, height} or an ok:false result",
+          "parent": "S1.2",
+          "when": "for each mark",
+          "edges": [{ "case": "selector matches nothing", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:85" }]
+        },
+        {
+          "id": "S1.4",
+          "fn": "drawOverlay#note",
+          "kind": "new",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:130",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:130-141"],
+          "does": "If mark.note is truthy, builds the pill background and a text node with one tspan per line.",
+          "in": "mark.note (string)",
+          "out": "bg rect + text nodes in the SVG (not yet positioned)",
+          "parent": "S1.3",
+          "when": "mark.note is set",
+          "edges": [
+            { "case": "note contains \\n", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:132" },
+            { "case": "note is empty string", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:130", "note": "falsy, so no pill" },
+            { "case": "note is only whitespace or newlines", "state": "unknown", "note": "draws an empty red pill; nobody checked whether that is wanted" },
+            { "case": "note is not a string (number, object)", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:132", "note": "String() coerces; an object renders as [object Object]" }
+          ]
+        },
+        {
+          "id": "S1.5",
+          "fn": "drawOverlay#textWidth",
+          "kind": "new",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:142",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:142-144"],
+          "does": "Measures the text with getBBox and derives the pill size (text width + 20, 20px per line + 10).",
+          "in": "text node (must be attached to the DOM)",
+          "out": "pillW, pillH (numbers)",
+          "parent": "S1.4",
+          "edges": [{ "case": "SVG not attached yet", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:78", "note": "guaranteed by S1.2" }]
+        },
+        {
+          "id": "S1.6",
+          "fn": "drawOverlay#side",
+          "kind": "new",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:145",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:145-149"],
+          "does": "Puts the pill on the arrow's side, flips it if it overflows the page edge, then clamps x and y into the page.",
+          "in": "dx (arrow direction), tailX/tailY, pillW/pillH, page width/height",
+          "out": "pillX, pillY",
+          "parent": "S1.5",
+          "edges": [
+            { "case": "overflows on the arrow side", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:146" },
+            { "case": "overflows on both sides", "state": "unknown", "note": "clamp keeps it on the page but it can sit on top of the badge; not looked at" },
+            { "case": "pill wider than the page", "state": "unhandled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:148", "note": "Math.min(…, width - 4 - pillW) goes negative, so the pill starts off-screen and the text is cut; no wrapping or shrinking" }
+          ]
+        },
+        {
+          "id": "S1.7",
+          "fn": "drawOverlay#pillX",
+          "kind": "new",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:150",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:150-154"],
+          "does": "Writes the computed position and size onto the rect and text.",
+          "in": "pillX, pillY, pillW, pillH",
+          "out": "-",
+          "effects": "sets SVG attributes on bg and text",
+          "parent": "S1.6",
+          "edges": []
+        },
+        {
+          "id": "S1.8",
+          "fn": "drawOverlay#minX",
+          "kind": "modified",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:125",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:125-129", "ai/skills/annotated-screenshots/scripts/annotate.mjs:155-158"],
+          "does": "Starts the mark extent from outline + badge and widens it to include the pill.",
+          "in": "outline box, badge position, pill box",
+          "out": "extent {minX, minY, maxX, maxY} pushed to results (line 160)",
+          "parent": "S1.7",
+          "edges": [{ "case": "default crop must contain the pill", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:218" }]
+        },
+        {
+          "id": "S1.9",
+          "fn": "drawOverlay#return",
+          "kind": "modified",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:163",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:162-163"],
+          "does": "Returns the results; the late appendChild that used to sit here is gone (moved to S1.2).",
+          "in": "results[]",
+          "out": "{ results, width, height } to main",
+          "parent": "S1.3",
+          "when": "after the last mark",
+          "edges": [{ "case": "every mark failed to resolve", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:201", "note": "main prints the failures and exits 1; the SVG is attached either way" }]
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "requirement": "R2",
+      "title": "A mark with a length gets a longer arrow",
+      "trigger": "node annotate.mjs spec.json, spec has a mark with \"length\": 140",
+      "input": "spec.json with marks[0] = { selector, length: 140 }",
+      "result": "arrow from the outline corner is 140 px long instead of 90, kept inside the page",
+      "tests": [],
+      "steps": [
+        {
+          "id": "S2.1",
+          "fn": "main",
+          "kind": "unchanged",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:166",
+          "does": "Same entry as S1.1: reads the spec and runs drawOverlay with spec.marks.",
+          "in": "spec.json path",
+          "out": "PNG + JSON summary",
+          "edges": []
+        },
+        {
+          "id": "S2.2",
+          "fn": "drawOverlay#length",
+          "kind": "modified",
+          "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:105",
+          "touches": ["ai/skills/annotated-screenshots/scripts/annotate.mjs:105-107"],
+          "does": "Picks mark.length or the default 90 and places the arrow tail that far from the tip, clamped 16 px inside the page.",
+          "in": "mark.length (number, optional), tip position, direction dx/dy",
+          "out": "tailX, tailY",
+          "parent": "S2.1",
+          "when": "for each mark",
+          "edges": [
+            { "case": "length omitted", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:105", "note": "falls back to ARROW, output identical to before" },
+            { "case": "length longer than the space to the page edge", "state": "handled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:106" },
+            { "case": "length is 0", "state": "unknown", "note": "|| treats 0 as unset, so the arrow gets 90; probably fine, but it is a silent surprise" },
+            { "case": "length is not a number (\"abc\")", "state": "unhandled", "at": "ai/skills/annotated-screenshots/scripts/annotate.mjs:105", "note": "NaN reaches setAttribute; the arrow is not drawn and nothing reports it" }
+          ]
+        }
+      ]
+    }
+  ],
+  "extras": []
+}
